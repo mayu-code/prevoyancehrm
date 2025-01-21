@@ -30,8 +30,6 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetail customUserDetail;
 
- // Use dependency injection for JwtValidator
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
