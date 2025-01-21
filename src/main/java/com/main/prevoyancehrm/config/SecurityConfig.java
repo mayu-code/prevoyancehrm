@@ -26,9 +26,11 @@ import com.main.prevoyancehrm.jwtSecurity.JwtValidator;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    
-     @Autowired
+
+    @Autowired
     private CustomUserDetail customUserDetail;
+
+ // Use dependency injection for JwtValidator
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -38,18 +40,18 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .sessionManagement(management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/hrExecutive/**").hasAnyRole("SUPERADMIN","ADMIN","HRMANAGER","HREXECUTIVE")
-                .requestMatchers("/hrManager/**").hasAnyRole("SUPERADMIN","ADMIN","HRMANAGER")
-                .requestMatchers("/admin/**").hasAnyRole("SUPERADMIN","ADMIN")
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/hrExecutive/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE")
+                .requestMatchers("/hrManager/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER")
+                .requestMatchers("/admin/**").hasAnyRole("SUPERADMIN", "ADMIN")
                 .requestMatchers("/superAdmin/**").hasRole("SUPERADMIN")
                 .requestMatchers("/auth/**").permitAll()
                 .anyRequest().authenticated())
-            .addFilterBefore(new JwtValidator(), UsernamePasswordAuthenticationFilter.class)
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-            .authenticationProvider(authenticationProvider());
+            .authenticationProvider(authenticationProvider())
+            .addFilterBefore(new JwtValidator(), UsernamePasswordAuthenticationFilter.class); // Injected JwtValidator
         return http.build();
     }
 
@@ -64,14 +66,14 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
-            CorsConfiguration cfg = new CorsConfiguration();
-            cfg.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
-            cfg.setAllowedMethods(Collections.singletonList("*"));
-            cfg.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
-            cfg.setAllowCredentials(true);
-            cfg.setExposedHeaders(Arrays.asList("Authorization"));
-            cfg.setMaxAge(3600L);
-            return cfg;
+            CorsConfiguration configuration = new CorsConfiguration();
+            configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174")); // Move to properties in production
+            configuration.setAllowedMethods(Collections.singletonList("*"));
+            configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+            configuration.setAllowCredentials(true);
+            configuration.setExposedHeaders(Arrays.asList("Authorization"));
+            configuration.setMaxAge(3600L);
+            return configuration;
         };
     }
 
