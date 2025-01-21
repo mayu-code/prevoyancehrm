@@ -8,8 +8,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,10 +17,10 @@ import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.RegisterRequest;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.User;
-import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
+// import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
+
 
 @RestController
 @RequestMapping("/auth")
@@ -30,8 +30,8 @@ public class AuthController {
    @Autowired
    private UserServiceImpl userServiceImpl;
 
-   @Autowired
-   private CustomUserDetail customUserDetail;
+//    @Autowired
+//    private CustomUserDetail customUserDetail;
 
    @SuppressWarnings("null")
     @PostMapping("/register")
