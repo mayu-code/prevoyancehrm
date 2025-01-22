@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.repository.UserRepo;
 import com.main.prevoyancehrm.service.serviceInterface.UserService;
 
@@ -25,8 +26,13 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserById(long id) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getUserById'");
+        return this.userRepo.findById(id).get();
+    }
+
+    @Override
+    public User getUserByJwt(String jwt) {
+        String email = JwtProvider.getEmailFromToken(jwt);
+        return this.userRepo.findByEmail(email);
     }
     
 }
