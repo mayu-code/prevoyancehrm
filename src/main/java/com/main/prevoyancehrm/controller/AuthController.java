@@ -56,7 +56,7 @@ public class AuthController {
     }  
     User user = new User();
     user.setEmail(request.getEmail());
-    user.setContact(request.getContact());
+    user.setMobileNo(request.getContact());
     user.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
     user.setName(request.getName());
     user.setRole(Role.HREXECUTIVE);

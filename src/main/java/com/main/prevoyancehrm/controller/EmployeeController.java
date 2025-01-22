@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.controller;
 
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,17 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.RequestDto.EmployeeRequestDto;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.service.serviceLogic.EmployeeServiceLogic;
 
 @RestController
 @RequestMapping("/hrExecutive")
 @CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
 public class EmployeeController {
 
+    @Autowired
+    private EmployeeServiceLogic employeeServiceLogic;
+
     @PostMapping("addEmloyee")
     public ResponseEntity<SuccessResponse> addEmployee(@RequestBody EmployeeRequestDto employee){
 
         SuccessResponse response = new SuccessResponse();
+
        try{
+            this.employeeServiceLogic.addEmployee(employee);
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("User profile get Successfully!");
             response.setHttpStatusCode(200);
