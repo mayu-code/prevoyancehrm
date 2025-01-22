@@ -40,7 +40,7 @@ public class SecurityConfig {
         http
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/hrExecutive/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE")
+                .requestMatchers("/hrExecutive/**","/user/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE")
                 .requestMatchers("/hrManager/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER")
                 .requestMatchers("/admin/**").hasAnyRole("SUPERADMIN", "ADMIN")
                 .requestMatchers("/superAdmin/**").hasRole("SUPERADMIN")
