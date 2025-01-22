@@ -42,7 +42,7 @@ public class EmployeeServiceLogic {
             user.setPossition(employee.getPersonaInfo().getPossition());
         }
 
-        user.setActive(false);
+        user.setActive(true);
         user.setApproved(false);
 
         user = this.userServiceImpl.registerUser(user);

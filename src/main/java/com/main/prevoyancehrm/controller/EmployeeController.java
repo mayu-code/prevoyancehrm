@@ -31,7 +31,7 @@ public class EmployeeController {
        try{
             this.employeeServiceLogic.addEmployee(employee);
             response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("User profile get Successfully!");
+            response.setMessage("Employee Added Successfully!");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
 
