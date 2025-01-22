@@ -18,6 +18,10 @@ public class EducationDetail {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
+    private String degree;
+    private String collge;
+    private String passingYear;
+    private String marksInPercent;
 
     @ManyToOne
     @JoinColumn(name = "user_id")

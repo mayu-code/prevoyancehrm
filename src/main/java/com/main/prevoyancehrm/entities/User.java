@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.main.prevoyancehrm.constants.Role;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -32,8 +33,20 @@ public class User implements UserDetails{
 
     private String email;
     private String password;
-    private String name;
     private String contact;
+    private String name;
+    private String fathersName;
+    private String mobileNo;
+    private String emgMobileNo;
+
+    @Column(columnDefinition = "LONGTEXT")
+    private String image;
+    private String presentAddress;
+    private String permanentAddress;
+    private String bankAccountNo;
+    private String ifscCode;
+    private String possition;
+
     private boolean approved;
     private boolean active;
     
@@ -44,7 +57,7 @@ public class User implements UserDetails{
     private List<EducationDetail> educationDetails;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
-    private List<ExperienceDetail> experienceDetails;
+    private List<ProfessionalDetail> ProfessionalDetail;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

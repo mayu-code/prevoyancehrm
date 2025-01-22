@@ -1,12 +1,9 @@
 package com.main.prevoyancehrm.controller;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,15 +37,15 @@ public class AuthController {
    @Autowired
    private CustomUserDetail customUserDetail;
 
-   @SuppressWarnings("null")
-    @PostMapping("/register")
+   
+   @PostMapping("/register")
    public ResponseEntity<SuccessResponse> registerUser(@RequestBody RegisterRequest request){
     SuccessResponse response = new SuccessResponse();
     User user1 = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user1!=null){
         if(user1.getRole()==Role.EMPLOYEE){
             response.setHttpStatus(HttpStatus.CREATED);
-            response.setMessage("You are presnet as a Employee , you can contact with Admin!");
+            response.setMessage("You are presnet as an Employee , you can contact with Admin!");
             response.setHttpStatusCode(409);
             return ResponseEntity.status(HttpStatus.CREATED).body(response);
         }
@@ -92,7 +89,7 @@ public class AuthController {
         if(user.getRole().equals(Role.EMPLOYEE)){
             response.setHttpStatus(HttpStatus.UNAUTHORIZED);
             response.setHttpStatusCode(401);;
-            response.setMessage("Your Are Not Aproved Yet as a HR Please contact Super Admin");
+            response.setMessage("Your Are Not Aproved Yet as an HR Please contact Super Admin");
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
         }
         UserDetails userDetails = customUserDetail.loadUserByUsername(request.getEmail());
@@ -100,7 +97,7 @@ public class AuthController {
 
         if(!isPasswordValid){
             response.setHttpStatus(HttpStatus.BAD_REQUEST);
-            response.setHttpStatusCode(500);;
+            response.setHttpStatusCode(500);
             response.setMessage("Invalid email or password");
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
         }
@@ -129,7 +126,6 @@ public class AuthController {
         if(details==null){
             throw new UsernameNotFoundException("Invalid credentials ");
         }
-
         return new UsernamePasswordAuthenticationToken(details,password,details.getAuthorities());
 
     }

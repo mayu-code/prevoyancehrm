@@ -44,7 +44,7 @@ public class SecurityConfig {
                 .requestMatchers("/hrManager/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER")
                 .requestMatchers("/admin/**").hasAnyRole("SUPERADMIN", "ADMIN")
                 .requestMatchers("/superAdmin/**").hasRole("SUPERADMIN")
-                .requestMatchers("/auth/**","swagger-ui/**").permitAll()
+                .requestMatchers("/auth/**","swagger-ui/**","v3/**").permitAll()
                 .anyRequest().authenticated())
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
