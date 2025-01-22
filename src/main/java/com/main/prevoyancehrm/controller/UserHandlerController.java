@@ -23,7 +23,7 @@ public class UserHandlerController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-    @GetMapping("getProfile")
+    @GetMapping("/getProfile")
     public ResponseEntity<DataResponse> getProfile(@RequestHeader("Authorization")String jwt){
         DataResponse response = new DataResponse();
         User user = new User();

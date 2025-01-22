@@ -29,8 +29,6 @@ import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
-
-
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
@@ -53,12 +51,18 @@ public class AuthController {
         response.setHttpStatusCode(409);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    if(user1.getRole()==Role.EMPLOYEE){
+        response.setHttpStatus(HttpStatus.CREATED);
+        response.setMessage("You are presnet as a Employee , you can contact with Admin!");
+        response.setHttpStatusCode(409);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
     User user = new User();
     user.setEmail(request.getEmail());
     user.setContact(request.getContact());
     user.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
     user.setName(request.getName());
-    user.setRole(Role.EMPLOYEE);
+    user.setRole(Role.HREXECUTIVE);
     System.out.println(user.toString());
     try{
         this.userServiceImpl.registerUser(user);
@@ -79,14 +83,18 @@ public class AuthController {
     public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request){
         LoginResponse response = new LoginResponse();
         User user = this.userServiceImpl.getUserByEmail(request.getEmail());
-
         if(user==null){
             response.setHttpStatus(HttpStatus.UNAUTHORIZED);
             response.setHttpStatusCode(500);;
             response.setMessage("Invalid email or password");
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
         }
-
+        if(user.getRole().equals(Role.EMPLOYEE)){
+            response.setHttpStatus(HttpStatus.UNAUTHORIZED);
+            response.setHttpStatusCode(401);;
+            response.setMessage("Your Are Not Aproved Yet as a HR Please contact Super Admin");
+            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+        }
         UserDetails userDetails = customUserDetail.loadUserByUsername(request.getEmail());
         boolean isPasswordValid = new BCryptPasswordEncoder().matches(request.getPassword(),userDetails.getPassword() );
 
@@ -115,7 +123,6 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
         }
     }
-
 
     private Authentication authenticate(String email , String password){
         UserDetails details = customUserDetail.loadUserByUsername(email);
