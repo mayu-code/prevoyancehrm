@@ -28,18 +28,18 @@ public class EmployeeServiceLogic {
     public User addEmployee(EmployeeRequestDto employee){
         User user = new User();
 
-        if (employee.getPersonaInfo() != null) {
-            user.setEmail(employee.getPersonaInfo().getEmail());
-            user.setName(employee.getPersonaInfo().getName());
-            user.setFathersName(employee.getPersonaInfo().getFathersName());
-            user.setMobileNo(employee.getPersonaInfo().getMobileNo());
-            user.setEmgMobileNo(employee.getPersonaInfo().getEmgMobileNo());
-            user.setImage(employee.getPersonaInfo().getImage());
-            user.setPresentAddress(employee.getPersonaInfo().getPresentAddress());
-            user.setPermanentAddress(employee.getPersonaInfo().getPermanentAddress());
-            user.setBankAccountNo(employee.getPersonaInfo().getBankAccountNo());
-            user.setIfscCode(employee.getPersonaInfo().getIfscCode());
-            user.setPossition(employee.getPersonaInfo().getPossition());
+        if (employee.getPersonalDetail() != null) {
+            user.setEmail(employee.getPersonalDetail().getEmail());
+            user.setName(employee.getPersonalDetail().getName());
+            user.setFathersName(employee.getPersonalDetail().getFathersName());
+            user.setMobileNo(employee.getPersonalDetail().getMobileNo());
+            user.setEmgMobileNo(employee.getPersonalDetail().getEmgMobileNo());
+            user.setImage(employee.getPersonalDetail().getImage());
+            user.setPresentAddress(employee.getPersonalDetail().getPresentAddress());
+            user.setPermanentAddress(employee.getPersonalDetail().getPermanentAddress());
+            user.setBankAccountNo(employee.getPersonalDetail().getBankAccountNo());
+            user.setIfscCode(employee.getPersonalDetail().getIfscCode());
+            user.setPossition(employee.getPersonalDetail().getPossition());
         }
 
         user.setActive(true);

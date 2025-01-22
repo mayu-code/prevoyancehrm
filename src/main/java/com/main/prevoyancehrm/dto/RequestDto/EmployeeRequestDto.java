@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class EmployeeRequestDto {
-    private PersonaInfo personaInfo;
+    private PersonalDetail personalDetail;
     private List<EducationDetailRequestDTO> educationDetails;
     private List<ProfessionalDetailRequestDTO> professionalDetails;
 }

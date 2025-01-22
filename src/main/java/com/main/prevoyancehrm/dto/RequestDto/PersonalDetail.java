@@ -3,7 +3,7 @@ package com.main.prevoyancehrm.dto.RequestDto;
 import lombok.Data;
 
 @Data
-public class PersonaInfo {
+public class PersonalDetail {
     private String email;
     private String name;
     private String fathersName;
