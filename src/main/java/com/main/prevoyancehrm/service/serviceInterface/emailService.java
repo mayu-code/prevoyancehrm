@@ -1,5 +1,7 @@
 package com.main.prevoyancehrm.service.serviceInterface;
 
-public class emailService {
-    // boolean welcomeEmail(String to,String)
+public interface EmailService {
+    boolean welcomeEmail(String email,String name,String position,String mobileNo);
+    boolean aprovalEmail(String to,String subject,String body);
+    boolean sendEmail(String to,String subject,String body);
 }

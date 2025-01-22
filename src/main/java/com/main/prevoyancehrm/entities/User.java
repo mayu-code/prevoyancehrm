@@ -34,7 +34,7 @@ public class User implements UserDetails{
     private String email;
     private String password;
     private String name;
-    private String fathersName;
+    private String fatherName;
     private String mobileNo;
     private String emgMobileNo;
 
@@ -44,7 +44,7 @@ public class User implements UserDetails{
     private String permanentAddress;
     private String bankAccountNo;
     private String ifscCode;
-    private String possition;
+    private String position;
 
     private boolean approved;
     private boolean active;

@@ -19,7 +19,7 @@ public class EducationDetail {
     private long id;
 
     private String degree;
-    private String collge;
+    private String college;
     private String passingYear;
     private String marksInPercent;
 

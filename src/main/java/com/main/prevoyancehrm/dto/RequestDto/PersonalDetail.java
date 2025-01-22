@@ -6,7 +6,7 @@ import lombok.Data;
 public class PersonalDetail {
     private String email;
     private String name;
-    private String fathersName;
+    private String fatherName;
     private String mobileNo;
     private String emgMobileNo;
 
@@ -15,5 +15,5 @@ public class PersonalDetail {
     private String permanentAddress;
     private String bankAccountNo;
     private String ifscCode;
-    private String possition;
+    private String position;
 }

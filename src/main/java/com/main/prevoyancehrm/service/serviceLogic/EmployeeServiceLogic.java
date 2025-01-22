@@ -1,5 +1,7 @@
 package com.main.prevoyancehrm.service.serviceLogic;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -24,6 +27,8 @@ public class EmployeeServiceLogic {
     @Autowired
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
+    private EmailServiceImpl emailServiceImpl;
+
 
     public User addEmployee(EmployeeRequestDto employee){
         User user = new User();
@@ -31,7 +36,7 @@ public class EmployeeServiceLogic {
         if (employee.getPersonalDetail() != null) {
             user.setEmail(employee.getPersonalDetail().getEmail());
             user.setName(employee.getPersonalDetail().getName());
-            user.setFathersName(employee.getPersonalDetail().getFathersName());
+            user.setFatherName(employee.getPersonalDetail().getFatherName());
             user.setMobileNo(employee.getPersonalDetail().getMobileNo());
             user.setEmgMobileNo(employee.getPersonalDetail().getEmgMobileNo());
             user.setImage(employee.getPersonalDetail().getImage());
@@ -39,18 +44,23 @@ public class EmployeeServiceLogic {
             user.setPermanentAddress(employee.getPersonalDetail().getPermanentAddress());
             user.setBankAccountNo(employee.getPersonalDetail().getBankAccountNo());
             user.setIfscCode(employee.getPersonalDetail().getIfscCode());
-            user.setPossition(employee.getPersonalDetail().getPossition());
+            user.setPosition(employee.getPersonalDetail().getPosition());
         }
 
         user.setActive(true);
         user.setApproved(false);
 
         user = this.userServiceImpl.registerUser(user);
+        String email = user.getEmail();
+        String name = user.getName();
+        String position = user.getPosition();
+        String mobileNO = user.getMobileNo();
+        CompletableFuture.runAsync(()-> this.emailServiceImpl.welcomeEmail(email,name, position, mobileNO));
         if (employee.getEducationDetails() != null) {
             for (EducationDetailRequestDTO educationDto : employee.getEducationDetails()) {
                 EducationDetail educationDetail = new EducationDetail();
                 educationDetail.setDegree(educationDto.getDegree());
-                educationDetail.setCollge(educationDto.getCollge());
+                educationDetail.setCollege(educationDto.getCollege());
                 educationDetail.setPassingYear(educationDto.getPassingYear());
                 educationDetail.setMarksInPercent(educationDto.getMarksInPercent());
                 educationDetail.setUser(user);

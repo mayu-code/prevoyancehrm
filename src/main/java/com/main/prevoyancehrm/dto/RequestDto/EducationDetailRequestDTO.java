@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class EducationDetailRequestDTO {
     private String degree;
-    private String collge;
+    private String college;
     private String passingYear;
     private String marksInPercent;
 }

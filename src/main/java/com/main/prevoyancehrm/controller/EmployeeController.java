@@ -1,6 +1,7 @@
 package com.main.prevoyancehrm.controller;
 
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.RequestDto.EmployeeRequestDto;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceLogic.EmployeeServiceLogic;
 
 @RestController
@@ -23,13 +26,18 @@ public class EmployeeController {
     @Autowired
     private EmployeeServiceLogic employeeServiceLogic;
 
+    @Autowired
+    private EmailServiceImpl emailServiceImpl;
+
     @PostMapping("addEmloyee")
     public ResponseEntity<SuccessResponse> addEmployee(@RequestBody EmployeeRequestDto employee){
 
         SuccessResponse response = new SuccessResponse();
 
        try{
-            this.employeeServiceLogic.addEmployee(employee);
+            User user = new User() ;
+            user =this.employeeServiceLogic.addEmployee(employee);
+
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("Employee Added Successfully!");
             response.setHttpStatusCode(200);
