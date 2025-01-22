@@ -27,6 +27,7 @@ public class EmployeeServiceLogic {
     @Autowired
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
+    @Autowired
     private EmailServiceImpl emailServiceImpl;
 
 
@@ -55,7 +56,7 @@ public class EmployeeServiceLogic {
         String name = user.getName();
         String position = user.getPosition();
         String mobileNO = user.getMobileNo();
-        CompletableFuture.runAsync(()-> this.emailServiceImpl.welcomeEmail(email,name, position, mobileNO));
+        CompletableFuture.runAsync(()-> emailServiceImpl.welcomeEmail(email,name, position, mobileNO));
         if (employee.getEducationDetails() != null) {
             for (EducationDetailRequestDTO educationDto : employee.getEducationDetails()) {
                 EducationDetail educationDetail = new EducationDetail();
