@@ -46,17 +46,17 @@ public class AuthController {
     SuccessResponse response = new SuccessResponse();
     User user1 = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user1!=null){
+        if(user1.getRole()==Role.EMPLOYEE){
+            response.setHttpStatus(HttpStatus.CREATED);
+            response.setMessage("You are presnet as a Employee , you can contact with Admin!");
+            response.setHttpStatusCode(409);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        }
         response.setHttpStatus(HttpStatus.CREATED);
         response.setMessage("Email Already present !");
         response.setHttpStatusCode(409);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
-    if(user1.getRole()==Role.EMPLOYEE){
-        response.setHttpStatus(HttpStatus.CREATED);
-        response.setMessage("You are presnet as a Employee , you can contact with Admin!");
-        response.setHttpStatusCode(409);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
+    }  
     User user = new User();
     user.setEmail(request.getEmail());
     user.setContact(request.getContact());
