@@ -7,7 +7,6 @@ public class PersonalDetail {
     private String email;
     private String firstName;
     private String lastName;
-    private String password;
     private String mobileNo;
     private String emgMobileNo;
     private String officialEmail;

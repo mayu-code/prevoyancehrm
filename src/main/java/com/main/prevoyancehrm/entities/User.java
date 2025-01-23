@@ -52,7 +52,7 @@ public class User implements UserDetails{
     private boolean active;
     
     @Enumerated(EnumType.STRING)
-    private Role role = Role.EMPLOYEE;
+    private Role role = Role.CANDIDATE;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
     private List<EducationDetail> educationDetails;

@@ -15,7 +15,9 @@ import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -31,6 +33,12 @@ public class EmployeeServiceLogic {
     @Autowired
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
+    @Autowired
+    private BankDetailServiceImpl bankDetailServiceImpl;
+
+    @Autowired
+    private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
+
 
 
     public User addEmployee(EmployeeRequestDto employee){
@@ -40,7 +48,6 @@ public class EmployeeServiceLogic {
             user.setEmail(employee.getPersonalDetail().getEmail());
             user.setFirstName(employee.getPersonalDetail().getFirstName());
             user.setLastName(employee.getPersonalDetail().getLastName()); // Added
-            user.setPassword(employee.getPersonalDetail().getPassword()); // Added
             user.setMobileNo(employee.getPersonalDetail().getMobileNo());
             user.setEmgMobileNo(employee.getPersonalDetail().getEmgMobileNo());
             user.setOfficialEmail(employee.getPersonalDetail().getOfficialEmail()); // Added
@@ -64,6 +71,7 @@ public class EmployeeServiceLogic {
             bankDetails.setPanNo(bankDetailRequestDto.getPanNo());
             bankDetails.setUanNo(bankDetailRequestDto.getUanNo());
             bankDetails.setUser(user);
+            this.bankDetailServiceImpl.addBankDetails(bankDetails);
             
         }
         
@@ -111,10 +119,10 @@ public class EmployeeServiceLogic {
                 experienceDetail.setSalarySlip(experienceDetailRequestDto.getSalarySlip());
                 experienceDetail.setReasonOfLeaving(experienceDetailRequestDto.getReasonOfLeaving());
                 experienceDetail.setUser(user);
+                this.experienceDetailsServiceImpl.addExperienceDetail(experienceDetail);
             }
         }
-        
-        
+          
         return user;
     }
     
