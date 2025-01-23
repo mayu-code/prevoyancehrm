@@ -19,6 +19,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 
@@ -32,31 +33,38 @@ public class User implements UserDetails{
     private long id;
 
     private String email;
+    private String firstName;
+    private String lastName;
     private String password;
-    private String name;
-    private String fatherName;
     private String mobileNo;
     private String emgMobileNo;
+    private String officialEmail;
+    private String dob;
+    private String adharNo;
 
     @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String presentAddress;
     private String permanentAddress;
-    private String bankAccountNo;
-    private String ifscCode;
-    private String position;
 
+    private boolean employee;
     private boolean approved;
     private boolean active;
     
     @Enumerated(EnumType.STRING)
-    private Role role = Role.EMPLOYEE;
+    private Role role = Role.CANDIDATE;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
     private List<EducationDetail> educationDetails;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
-    private List<ProfessionalDetail> ProfessionalDetail;
+    private List<ExperienceDetail> experienceDetail;
+
+    @OneToOne(mappedBy = "user")
+    private ProfessionalDetail professionalDetail;
+
+    @OneToOne(mappedBy = "user")
+    private BankDetails bankDetails;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

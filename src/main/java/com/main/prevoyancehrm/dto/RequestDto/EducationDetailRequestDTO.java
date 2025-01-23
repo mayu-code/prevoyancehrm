@@ -6,6 +6,8 @@ import lombok.Data;
 public class EducationDetailRequestDTO {
     private String degree;
     private String college;
+    private String field;
     private String passingYear;
     private String marksInPercent;
+    private String additionalNote;
 }

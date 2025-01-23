@@ -7,26 +7,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
-@Entity
 @Data
-public class EducationDetail {
+@Entity
+public class BankDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    private String degree;
-    private String college;
-    private String field;
-    private String passingYear;
-    private String marksInPercent;
-    private String additionalNote;
+    private String bankName;
+    private String bankAccountNo;
+    private String ifscCode;
+    private String panNo;
+    private String uanNo;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name="user_id")
     @JsonIgnore
-    private User user; 
+    private User user;
+
 }

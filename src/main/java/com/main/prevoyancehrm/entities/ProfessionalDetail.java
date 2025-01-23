@@ -9,25 +9,34 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.Data;
 
 @Entity
 @Data
 public class ProfessionalDetail {
-    @Id
+   @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String organizationName;
-    private String designation;
-    private String duration;
-    private String annualCTC;
+
+    private String totalExperience;
+    private String location;
+    private String hireSource;
+    private String position;
+    private String department;
+    private String skills;
+    private String highestQualification;
+    private double currentSalary;
+    private String joiningDate;
 
     @Column(columnDefinition = "LONGTEXT")
-    private String reasonOfLeaving;
+    private String additionalInfo;
 
+    @Column(columnDefinition = "LONGTEXT")
+    private String offerLetter;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @OneToOne
+    @JoinColumn(name="user_id")
     @JsonIgnore
-    private User user; 
+    private User user;
 }
