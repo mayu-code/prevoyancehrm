@@ -5,13 +5,17 @@ import java.util.concurrent.CompletableFuture;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.prevoyancehrm.dto.RequestDto.BankDetailRequestDto;
 import com.main.prevoyancehrm.dto.RequestDto.EducationDetailRequestDTO;
 import com.main.prevoyancehrm.dto.RequestDto.EmployeeRequestDto;
+import com.main.prevoyancehrm.dto.RequestDto.ExperienceDetailRequestDto;
+import com.main.prevoyancehrm.dto.RequestDto.ProfessionalDetailRequestDTO;
+import com.main.prevoyancehrm.entities.BankDetails;
 import com.main.prevoyancehrm.entities.EducationDetail;
+import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -27,8 +31,6 @@ public class EmployeeServiceLogic {
     @Autowired
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
-    @Autowired
-    private EmailServiceImpl emailServiceImpl;
 
 
     public User addEmployee(EmployeeRequestDto employee){
@@ -36,50 +38,83 @@ public class EmployeeServiceLogic {
 
         if (employee.getPersonalDetail() != null) {
             user.setEmail(employee.getPersonalDetail().getEmail());
-            user.setName(employee.getPersonalDetail().getName());
-            user.setFatherName(employee.getPersonalDetail().getFatherName());
+            user.setFirstName(employee.getPersonalDetail().getFirstName());
+            user.setLastName(employee.getPersonalDetail().getLastName()); // Added
+            user.setPassword(employee.getPersonalDetail().getPassword()); // Added
             user.setMobileNo(employee.getPersonalDetail().getMobileNo());
             user.setEmgMobileNo(employee.getPersonalDetail().getEmgMobileNo());
+            user.setOfficialEmail(employee.getPersonalDetail().getOfficialEmail()); // Added
+            user.setDob(employee.getPersonalDetail().getDob()); // Added
+            user.setAdharNo(employee.getPersonalDetail().getAdharNo()); // Added
             user.setImage(employee.getPersonalDetail().getImage());
             user.setPresentAddress(employee.getPersonalDetail().getPresentAddress());
             user.setPermanentAddress(employee.getPersonalDetail().getPermanentAddress());
-            user.setBankAccountNo(employee.getPersonalDetail().getBankAccountNo());
-            user.setIfscCode(employee.getPersonalDetail().getIfscCode());
-            user.setPosition(employee.getPersonalDetail().getPosition());
         }
-
+        
         user.setActive(true);
         user.setApproved(false);
-
         user = this.userServiceImpl.registerUser(user);
-        String email = user.getEmail();
-        String name = user.getName();
-        String position = user.getPosition();
-        String mobileNO = user.getMobileNo();
-        CompletableFuture.runAsync(()-> emailServiceImpl.welcomeEmail(email,name, position, mobileNO));
+
+        BankDetails bankDetails = new BankDetails();
+        if (employee.getBankDetail() != null) {
+            BankDetailRequestDto bankDetailRequestDto = employee.getBankDetail();
+            bankDetails.setBankName(bankDetailRequestDto.getBankName());
+            bankDetails.setBankAccountNo(bankDetailRequestDto.getBankAccountNo());
+            bankDetails.setIfscCode(bankDetailRequestDto.getIfscCode());
+            bankDetails.setPanNo(bankDetailRequestDto.getPanNo());
+            bankDetails.setUanNo(bankDetailRequestDto.getUanNo());
+            bankDetails.setUser(user);
+            
+        }
+        
+        ProfessionalDetail pDetail = new ProfessionalDetail();
+        if (employee.getProfessionalDetails() != null) {
+            ProfessionalDetailRequestDTO professionalDetail = employee.getProfessionalDetails();
+            pDetail.setTotalExperience(professionalDetail.getTotalExperience());
+            pDetail.setLocation(professionalDetail.getLocation());
+            pDetail.setHireSource(professionalDetail.getHireSource());
+            pDetail.setPosition(professionalDetail.getPosition());
+            pDetail.setDepartment(professionalDetail.getDepartment());
+            pDetail.setSkills(professionalDetail.getSkills());
+            pDetail.setHighestQualification(professionalDetail.getHighestQualification());
+            pDetail.setCurrentSalary(professionalDetail.getCurrentSalary());
+            pDetail.setJoiningDate(professionalDetail.getJoiningDate());
+            pDetail.setAdditionalInfo(professionalDetail.getAdditionalInfo());
+            pDetail.setOfferLetter(professionalDetail.getOfferLetter());
+            pDetail.setUser(user);
+            this.professionalDetailServiceImpl.addProfessionalDetail(pDetail);
+
+        }
+
         if (employee.getEducationDetails() != null) {
             for (EducationDetailRequestDTO educationDto : employee.getEducationDetails()) {
                 EducationDetail educationDetail = new EducationDetail();
                 educationDetail.setDegree(educationDto.getDegree());
                 educationDetail.setCollege(educationDto.getCollege());
+                educationDetail.setField(educationDto.getField());
                 educationDetail.setPassingYear(educationDto.getPassingYear());
                 educationDetail.setMarksInPercent(educationDto.getMarksInPercent());
+                educationDetail.setAdditionalNote(educationDto.getAdditionalNote());
                 educationDetail.setUser(user);
                 this.educationDetailServiceImpl.addEducationDetail(educationDetail);
             }
         }
-        if (employee.getProfessionalDetails() != null) {
-            for (var professionalDto : employee.getProfessionalDetails()) {
-                ProfessionalDetail professionalDetail = new ProfessionalDetail();
-                professionalDetail.setOrganizationName(professionalDto.getOrganizationName());
-                professionalDetail.setDesignation(professionalDto.getDesignation());
-                professionalDetail.setDuration(professionalDto.getDuration());
-                professionalDetail.setAnnualCTC(professionalDto.getAnnualCTC());
-                professionalDetail.setReasonOfLeaving(professionalDto.getReasonOfLeaving());
-                professionalDetail.setUser(user);
-                this.professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
+
+        if (employee.getExperienceDetails() != null) {
+            for (ExperienceDetailRequestDto experienceDetailRequestDto : employee.getExperienceDetails()) {
+                ExperienceDetail experienceDetail = new ExperienceDetail();
+                experienceDetail.setCompanyName(experienceDetailRequestDto.getCompanyName());
+                experienceDetail.setDesignation(experienceDetailRequestDto.getDesignation());
+                experienceDetail.setDuration(experienceDetailRequestDto.getDuration());
+                experienceDetail.setAnnualCTC(experienceDetailRequestDto.getAnnualCTC());
+                experienceDetail.setOfferLetter(experienceDetailRequestDto.getOfferLetter());
+                experienceDetail.setSalarySlip(experienceDetailRequestDto.getSalarySlip());
+                experienceDetail.setReasonOfLeaving(experienceDetailRequestDto.getReasonOfLeaving());
+                experienceDetail.setUser(user);
             }
         }
+        
+        
         return user;
     }
     

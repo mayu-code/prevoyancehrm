@@ -8,5 +8,7 @@ import lombok.Data;
 public class EmployeeRequestDto {
     private PersonalDetail personalDetail;
     private List<EducationDetailRequestDTO> educationDetails;
-    private List<ProfessionalDetailRequestDTO> professionalDetails;
+    private ProfessionalDetailRequestDTO professionalDetails;
+    private BankDetailRequestDto bankDetail;
+    private List<ExperienceDetailRequestDto> experienceDetails;
 }
