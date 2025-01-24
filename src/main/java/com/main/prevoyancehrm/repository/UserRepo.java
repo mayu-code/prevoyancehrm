@@ -29,7 +29,7 @@ public interface UserRepo extends JpaRepository<User,Long>{
 
 
     @Query("""
-            SELECT  com.main.prevoyancehrm.dto.ResponseDto.Candidates(
+            SELECT new com.main.prevoyancehrm.dto.ResponseDto.Candidates(
                 u.id, u.email, u.firstName, u.lastName, u.mobileNo, u.professionalDetail.position, u.professionalDetail.department
             ) 
             FROM User u 
