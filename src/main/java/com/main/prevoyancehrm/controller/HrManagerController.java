@@ -109,7 +109,7 @@ public class HrManagerController {
         }
     }
 
-    @GetMapping("/getAllEmployee")
+    @GetMapping("/getAllEmployees")
     public ResponseEntity<DataResponse> getAllEmployee(@RequestParam(required = false)String query,
                                                          @RequestParam(required = false)String department
                                                         ){
