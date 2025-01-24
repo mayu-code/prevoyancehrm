@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.constants.Role;
+import com.main.prevoyancehrm.dto.RequestDto.CreatePasswordRequest;
 import com.main.prevoyancehrm.dto.RequestDto.LoginRequest;
 import com.main.prevoyancehrm.dto.RequestDto.RegisterRequest;
 import com.main.prevoyancehrm.dto.responseObjects.LoginResponse;
@@ -73,6 +74,43 @@ public class AuthController {
         response.setMessage(e.getMessage());
         response.setHttpStatusCode(500);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+   }
+
+   @PostMapping("/createPassword")
+   public ResponseEntity<SuccessResponse> createPassword(@RequestBody CreatePasswordRequest request){
+    SuccessResponse response = new SuccessResponse();
+    User user = this.userServiceImpl.getUserByEmail(request.getEmail());
+    if(user==null){
+        response.setHttpStatus(HttpStatus.NOT_FOUND);
+        response.setHttpStatusCode(500);;
+        response.setMessage("User Not Found");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    if(user.getRole().equals(Role.CANDIDATE)){
+        response.setHttpStatus(HttpStatus.NOT_FOUND);
+        response.setHttpStatusCode(500);;
+        response.setMessage("you are not onboarded yet !");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    if(request.getPassword()!=request.getCPassword()){
+        response.setHttpStatus(HttpStatus.NOT_FOUND);
+        response.setHttpStatusCode(500);;
+        response.setMessage("Password and conform password not match !");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+    }
+    user.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
+    this.userServiceImpl.registerUser(user);
+    try{     
+        response.setHttpStatus(HttpStatus.OK);
+        response.setHttpStatusCode(200);
+        response.setMessage("password created successfully ! ");
+        return ResponseEntity.of(Optional.of(response));
+    }catch(Exception e){
+        response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+        response.setHttpStatusCode(500);;
+        response.setMessage("something went wrong !");
+        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
     }
    }
 
