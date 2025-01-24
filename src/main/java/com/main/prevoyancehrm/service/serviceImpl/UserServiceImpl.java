@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public List<User> getAllEmployees(String query, String department) {
+    public List<Candidates> getAllEmployees(String query, String department) {
         Role role = Role.CANDIDATE;
         return this.userRepo.findAllEmployees(query,department,role);
     }

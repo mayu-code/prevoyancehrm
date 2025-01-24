@@ -1,25 +1,42 @@
 package com.main.prevoyancehrm.helper;
 
+public class EmailFormater {
 
-public class EmailFormater{
-    
-    public static String generateWelcomeEmail(String email,String name,String position,String mobileNo) {
+    public static String generateWelcomeEmail(String email, String name, String position, String mobileNo) {
         StringBuilder emailContent = new StringBuilder();
-    
-        emailContent.append("Dear ").append(name).append(",<br><br>");
-        emailContent.append("Welcome to <b>Prevoyance IT Solutions Pvt. Ltd.</b>! We are thrilled to have you on our team. Below are your onboarding details:<br><br>");
-        
-        emailContent.append("<b>Employee Detail:</b><br>");
-        emailContent.append("- <b>Name:</b> ").append(name).append("<br>");
-        emailContent.append("- <b>Email:</b> ").append(email).append("<br>");
-        emailContent.append("- <b>Mobile No:</b> ").append(mobileNo).append("<br>");
-        emailContent.append("- <b>Position:</b> ").append(position).append("<br><br>");
-        
-        emailContent.append("We are confident that you will be an excellent addition to our team and look forward to seeing your contributions.<br><br>");
-        emailContent.append("If you have any questions, please don&#39;t hesitate to reach out.<br><br>");
-        emailContent.append("Warm Regards,<br>Prevoyance IT Solutions Pvt. Ltd. HR Team<br>");
-        
+
+        emailContent.append("<html>")
+                    .append("<body>")
+                    .append("<p>Dear <b>").append(name).append("</b>,</p>")
+                    .append("<p>")
+                    .append("Welcome to <b>Prevoyance IT Solutions Pvt. Ltd.</b>! We are thrilled to have you on our team. ")
+                    .append("Below are your onboarding details:")
+                    .append("</p>")
+                    .append("<h3>Employee Details:</h3>")
+                    .append("<ul>")
+                    .append("<li><b>Name:</b> ").append(name).append("</li>")
+                    .append("<li><b>Email:</b> ").append(email).append("</li>")
+                    .append("<li><b>Mobile No:</b> ").append(mobileNo).append("</li>")
+                    .append("<li><b>Position:</b> ").append(position).append("</li>")
+                    .append("</ul>")
+                    .append("<p>")
+                    .append("You can now log in to the website to create your password by clicking the link below:")
+                    .append("</p>")
+                    .append("<p>")
+                    .append("<a href=\"http://localhost:5173/createPassword\">Set Your Password</a>")
+                    .append("</p>")
+                    .append("<p>")
+                    .append("We are confident that you will be an excellent addition to our team and look forward to seeing your contributions.")
+                    .append("</p>")
+                    .append("<p>")
+                    .append("If you have any questions, please don’t hesitate to reach out.")
+                    .append("</p>")
+                    .append("<br>")
+                    .append("<p>Warm Regards,</p>")
+                    .append("<p><b>Prevoyance IT Solutions Pvt. Ltd. HR Team</b></p>")
+                    .append("</body>")
+                    .append("</html>");
+
         return emailContent.toString();
     }
-    
 }

@@ -97,7 +97,27 @@ public class HrManagerController {
         try{
             response.setData(this.userServiceImpl.getAllCandidates(query, department));
             response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("Employee Onboard Successfully!");
+            response.setMessage("Get All Candidate Successfully!");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/getAllEmployee")
+    public ResponseEntity<DataResponse> getAllEmployee(@RequestParam(required = false)String query,
+                                                         @RequestParam(required = false)String department
+                                                        ){
+        DataResponse response = new DataResponse();
+        try{
+            response.setData(this.userServiceImpl.getAllEmployees(query, department));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Get All Employee Successfully!");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
 

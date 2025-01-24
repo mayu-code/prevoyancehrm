@@ -49,6 +49,7 @@ public class EmployeeController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
+            e.printStackTrace();
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage(e.getMessage());
             response.setHttpStatusCode(500);

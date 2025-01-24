@@ -11,5 +11,5 @@ public interface UserService {
     User getUserById(long id);
     User getUserByJwt(String jwt);
     List<Candidates> getAllCandidates(String query,String department);
-    List<User> getAllEmployees(String query,String department);
+    List<Candidates> getAllEmployees(String query,String department);
 }

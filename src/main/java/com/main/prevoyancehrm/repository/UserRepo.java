@@ -29,12 +29,15 @@ public interface UserRepo extends JpaRepository<User,Long>{
 
 
     @Query("""
-            SELECT u FROM User u 
+            SELECT  com.main.prevoyancehrm.dto.ResponseDto.Candidates(
+                u.id, u.email, u.firstName, u.lastName, u.mobileNo, u.professionalDetail.position, u.professionalDetail.department
+            ) 
+            FROM User u 
             WHERE (:query IS NULL OR (u.firstName LIKE %:query% OR u.lastName LIKE %:query% OR u.email LIKE %:query%  OR u.mobileNo LIKE %:query%))
             AND (:department IS NULL OR u.professionalDetail.department =:department )
             AND (:role IS NULL OR u.role <>:role)
             """)
-    List<User> findAllEmployees(@Param("query") String query,
+    List<Candidates> findAllEmployees(@Param("query") String query,
                                 @Param("department") String department,
                                 @Param("role")Role role);
 }
