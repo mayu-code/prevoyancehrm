@@ -28,7 +28,7 @@ public class EmployeeController {
     @Autowired
     private UserServiceImpl userServiceImpl;
 
-    @PostMapping("/addEmloyee")
+    @PostMapping("/addEmployee")
     public ResponseEntity<SuccessResponse> addEmployee(@RequestBody EmployeeRequestDto employee){
 
         SuccessResponse response = new SuccessResponse();
