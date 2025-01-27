@@ -17,5 +17,10 @@ public class EducationDetailServiceImpl implements EducationDetailService{
     public EducationDetail addEducationDetail(EducationDetail educationDetail) {
         return this.educationDetailRepo.save(educationDetail);
     }
+
+    @Override
+    public EducationDetail getEducationDetailById(long id) {
+        return this.educationDetailRepo.findById(id).get();
+    }
     
 }

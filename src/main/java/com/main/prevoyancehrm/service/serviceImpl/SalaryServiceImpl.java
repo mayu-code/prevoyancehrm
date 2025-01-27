@@ -17,5 +17,10 @@ public class SalaryServiceImpl implements SalaryService{
     public Salary addSalary(Salary salary) {
         return this.salaryRepo.save(salary);
     }
+
+    @Override
+    public Salary getSalaryById(long id) {
+        return this.salaryRepo.findById(id).get();
+    }
     
 }

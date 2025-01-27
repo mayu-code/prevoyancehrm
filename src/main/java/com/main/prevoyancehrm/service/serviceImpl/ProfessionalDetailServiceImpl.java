@@ -17,5 +17,10 @@ public class ProfessionalDetailServiceImpl implements ProfessinalDetailService{
     public ProfessionalDetail addProfessionalDetail(ProfessionalDetail professionalDetail) {
         return this.professionalDetailRepo.save(professionalDetail);
     }
+
+    @Override
+    public ProfessionalDetail getProfessionalDetailById(long id) {
+        return this.professionalDetailRepo.findById(id).get();
+    }
     
 }

@@ -31,9 +31,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User getUserById(long id) {
-        User user =this.userRepo.findById(id).get();
-        user.setPassword(null);
-        return user;
+        return this.userRepo.findById(id).get();
     }
 
     @Override
@@ -58,6 +56,13 @@ public class UserServiceImpl implements UserService{
     public void deleteCandidate(long id) {
          this.userRepo.deleteById(id);
          return;
+    }
+
+    @Override
+    public User getEmployeeById(long id) {
+        User user =this.userRepo.findById(id).get();
+        user.setPassword(null);
+        return user;
     }
     
 }

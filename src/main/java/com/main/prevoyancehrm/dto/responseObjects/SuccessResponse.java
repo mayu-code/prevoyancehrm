@@ -1,7 +1,6 @@
 package com.main.prevoyancehrm.dto.responseObjects;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 
 import lombok.Data;
 

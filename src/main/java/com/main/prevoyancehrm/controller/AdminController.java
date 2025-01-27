@@ -15,6 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateBankDetail;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateEducationDetail;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateExperienceDetail;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdatePersonalDetail;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateProfessionalDetail;
+import com.main.prevoyancehrm.entities.BankDetails;
+import com.main.prevoyancehrm.entities.EducationDetail;
+import com.main.prevoyancehrm.entities.ExperienceDetail;
+import com.main.prevoyancehrm.entities.ProfessionalDetail;
+import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -26,6 +40,18 @@ public class AdminController {
 
     @Autowired
     private UserServiceImpl userServiceImpl;
+
+    @Autowired
+    private BankDetailServiceImpl bankDetailServiceImpl;
+
+    @Autowired
+    private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
+
+    @Autowired
+    private EducationDetailServiceImpl educationDetailServiceImpl;
+
+    @Autowired
+    private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
     
     @PostMapping("/deleteCandidate")
     public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<Long> ids){
@@ -51,7 +77,7 @@ public class AdminController {
     public ResponseEntity<DataResponse> getEmployeeById(@PathVariable("id")long id){
         DataResponse response = new DataResponse();
         try{
-            response.setData(this.userServiceImpl.getUserById(id));
+            response.setData(this.userServiceImpl.getEmployeeById(id));
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("get employee successfully !");
             response.setHttpStatusCode(200);
@@ -63,5 +89,202 @@ public class AdminController {
             response.setHttpStatusCode(500);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
+    }
+
+    @PostMapping("/updatePersonalDetail")
+    public ResponseEntity<SuccessResponse> updatePersonalDetail(@RequestBody UpdatePersonalDetail request){
+        SuccessResponse response = new SuccessResponse();
+        User user = this.userServiceImpl.getUserById(request.getId());
+        if(user==null){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("User Not Found!");
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        try{
+            
+            if(!user.getEmail().equals(request.getEmail())){
+                User user2 = this.userServiceImpl.getUserByEmail(request.getEmail());
+                if(user2!=null){
+                    response.setHttpStatus(HttpStatus.ALREADY_REPORTED);
+                    response.setMessage("Email Already Present !");
+                    response.setHttpStatusCode(208);
+                    return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+                }
+            }
+            user.setEmail(request.getEmail());
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setMobileNo(request.getMobileNo());
+            user.setEmgMobileNo(request.getEmgMobileNo());
+            user.setOfficialEmail(request.getOfficialEmail());
+            user.setDob(request.getDob());
+            user.setAdharNo(request.getAdharNo());
+            user.setImage(request.getImage());
+            user.setPresentAddress(request.getPresentAddress());
+            user.setPermanentAddress(request.getPermanentAddress());
+
+            this.userServiceImpl.registerUser(user);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update personal detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/updateBankDetail")
+    public ResponseEntity<SuccessResponse> updateBankDetail(@RequestBody UpdateBankDetail request){
+        SuccessResponse response = new SuccessResponse();
+        BankDetails bankDetails = this.bankDetailServiceImpl.getBankDetailsById(request.getId());
+        if(bankDetails==null){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("Bank Detail Not Found!");
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        try{
+            bankDetails.setBankName(request.getBankName());
+            bankDetails.setBankAccountNo(request.getBankAccountNo());
+            bankDetails.setIfscCode(request.getIfscCode());
+            bankDetails.setPanNo(request.getPanNo());
+            bankDetails.setUanNo(request.getUanNo());
+
+            this.bankDetailServiceImpl.addBankDetails(bankDetails);
+           
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update Bank detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/updateProfessionalDetail")
+    public ResponseEntity<SuccessResponse> updateProfessionalDetail(@RequestBody UpdateProfessionalDetail request){
+        SuccessResponse response = new SuccessResponse();
+        ProfessionalDetail detail = this.professionalDetailServiceImpl.getProfessionalDetailById(request.getId());
+        if(detail==null){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage("Professional Detail Not Found!");
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        try{
+            detail.setTotalExperience(request.getTotalExperience());
+            detail.setLocation(request.getLocation());
+            detail.setHireSource(request.getHireSource());
+            detail.setPosition(request.getPosition());
+            detail.setDepartment(request.getDepartment());
+            detail.setSkills(request.getSkills());
+            detail.setHighestQualification(request.getHighestQualification());
+            detail.setCurrentSalary(request.getCurrentSalary());
+            detail.setJoiningDate(request.getJoiningDate());
+            detail.setAdditionalInfo(request.getAdditionalInfo());
+            detail.setOfferLetter(request.getOfferLetter());
+
+            this.professionalDetailServiceImpl.addProfessionalDetail(detail);
+            
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update personal detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/updateEducationDetail")
+    public ResponseEntity<SuccessResponse> updateEducationDetail(@RequestBody UpdateEducationDetail request){
+        SuccessResponse response = new SuccessResponse();
+        EducationDetail detail = new EducationDetail();
+        if(request.getId()!=0){
+            detail = this.educationDetailServiceImpl.getEducationDetailById(request.getId());
+            detail.setDegree(request.getDegree());
+            detail.setCollege(request.getCollege());
+            detail.setField(request.getField());
+            detail.setPassingYear(request.getPassingYear());
+            detail.setMarksInPercent(request.getMarksInPercent());
+            detail.setAdditionalNote(request.getAdditionalNote());
+        }else{
+            User user = this.userServiceImpl.getUserById(request.getUserId());
+
+            detail.setDegree(request.getDegree());
+            detail.setCollege(request.getCollege());
+            detail.setField(request.getField());
+            detail.setPassingYear(request.getPassingYear());
+            detail.setMarksInPercent(request.getMarksInPercent());
+            detail.setAdditionalNote(request.getAdditionalNote());
+            detail.setUser(user);;
+        }
+        try{
+            this.educationDetailServiceImpl.addEducationDetail(detail);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update Education detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/updateExperienceDetail")
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request){
+        SuccessResponse response = new SuccessResponse();
+        ExperienceDetail detail = new ExperienceDetail();
+        if(request.getId()!=0){
+            detail = this.experienceDetailsServiceImpl.getExperienceDetailById(request.getId());
+
+            detail.setCompanyName(request.getCompanyName());
+            detail.setDesignation(request.getDesignation());
+            detail.setDuration(request.getDuration());
+            detail.setAnnualCTC(request.getAnnualCTC());
+            detail.setOfferLetter(request.getOfferLetter());
+            detail.setSalarySlip(request.getSalarySlip());
+            detail.setReasonOfLeaving(request.getReasonOfLeaving());
+        }else{
+            User user = this.userServiceImpl.getUserById(request.getUserId());
+            detail.setCompanyName(request.getCompanyName());
+            detail.setDesignation(request.getDesignation());
+            detail.setDuration(request.getDuration());
+            detail.setAnnualCTC(request.getAnnualCTC());
+            detail.setOfferLetter(request.getOfferLetter());
+            detail.setSalarySlip(request.getSalarySlip());
+            detail.setReasonOfLeaving(request.getReasonOfLeaving());
+            detail.setUser(user);
+
+            this.experienceDetailsServiceImpl.addExperienceDetail(detail);
+        }
+        
+        try{ 
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Update Experience Detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
     }
 }
