@@ -9,6 +9,7 @@ public interface UserService {
     User registerUser(User user);
     User getUserByEmail(String email);
     User getUserById(long id);
+    User getEmployeeById(long id);
     User getUserByJwt(String jwt);
     void deleteCandidate(long id);
     List<Candidates> getAllCandidates(String query,String department);

@@ -18,5 +18,10 @@ public class BankDetailServiceImpl implements BankDetailService{
     public BankDetails addBankDetails(BankDetails bankDetails) {
         return this.bankDetailRepo.save(bankDetails);
     }
+
+    @Override
+    public BankDetails getBankDetailsById(long id) {
+        return this.bankDetailRepo.findById(id).get();
+    }
     
 }

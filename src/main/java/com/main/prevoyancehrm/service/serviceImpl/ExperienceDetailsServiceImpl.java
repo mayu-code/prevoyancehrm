@@ -17,5 +17,10 @@ public class ExperienceDetailsServiceImpl implements ExperienceDetailService{
     public ExperienceDetail addExperienceDetail(ExperienceDetail experienceDetail) {
         return this.experienceDetailRepo.save(experienceDetail);
     }
+
+    @Override
+    public ExperienceDetail getExperienceDetailById(long id) {
+        return this.experienceDetailRepo.findById(id).get();
+    }
     
 }
