@@ -50,5 +50,11 @@ public class UserServiceImpl implements UserService{
         Role role = Role.CANDIDATE;
         return this.userRepo.findAllEmployees(query,department,role);
     }
+
+    @Override
+    public void deleteCandidate(long id) {
+         this.userRepo.deleteById(id);
+         return;
+    }
     
 }
