@@ -19,8 +19,10 @@ import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.OnboardingRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 @RestController
@@ -34,12 +36,18 @@ public class HrManagerController {
     @Autowired
     private EmailServiceImpl emailServiceImpl;
 
+    @Autowired
+    private SalaryServiceImpl salaryServiceImpl;
+
     @PostMapping("/onboardEmployee")
     public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@RequestBody OnboardingRequest request){
         SuccessResponse response = new SuccessResponse();
         User userEmployee = this.userServiceImpl.getUserByJwt(jwt);
+        Salary salary = new Salary();
 
         if(request.getRole()==null){
+            salary.setGrossSalary(request.getGrossSalary());
+            this.salaryServiceImpl.addSalary(salary);
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage("you need to pass role");
             response.setHttpStatusCode(500);
