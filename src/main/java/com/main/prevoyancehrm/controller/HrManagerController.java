@@ -129,7 +129,6 @@ public class HrManagerController {
             response.setMessage("Get All Employee Successfully!");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
-
         }catch(Exception e){
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage(e.getMessage());
