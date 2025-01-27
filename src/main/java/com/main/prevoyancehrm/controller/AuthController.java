@@ -93,7 +93,13 @@ public class AuthController {
         response.setMessage("you are not onboarded yet !");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
-    if(!request.getPassword().equals(request.getCPassword())){
+    if(user.getPassword()!=null){
+        response.setHttpStatus(HttpStatus.ALREADY_REPORTED);
+        response.setHttpStatusCode(208);
+        response.setMessage("password already created !");
+        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+    }
+    if(!request.getPassword().equals(request.getConfirmPassword())){
         response.setHttpStatus(HttpStatus.NOT_FOUND);
         response.setHttpStatusCode(500);;
         response.setMessage("Password and conform password not match !");
