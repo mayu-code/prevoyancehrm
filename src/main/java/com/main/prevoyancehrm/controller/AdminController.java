@@ -102,6 +102,16 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         try{
+            
+            if(!user.getEmail().equals(request.getEmail())){
+                User user2 = this.userServiceImpl.getUserByEmail(request.getEmail());
+                if(user2!=null){
+                    response.setHttpStatus(HttpStatus.ALREADY_REPORTED);
+                    response.setMessage("Email Already Present !");
+                    response.setHttpStatusCode(208);
+                    return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+                }
+            }
             user.setEmail(request.getEmail());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
