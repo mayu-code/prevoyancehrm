@@ -6,5 +6,5 @@ import lombok.Data;
 public class CreatePasswordRequest {
     private String email;
     private String password;
-    private String cPassword;
+    private String confirmPassword;
 }
