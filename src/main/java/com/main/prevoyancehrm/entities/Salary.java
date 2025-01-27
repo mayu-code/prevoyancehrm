@@ -50,5 +50,6 @@ public class Salary {
         this.medicalAllowance = grossSalary * 0.025;
         this.travelAllowance = grossSalary * 0.025;
         this.netSalary = grossSalary - this.professionalTax;
+        this.grossSalary = grossSalary;
     }
 }

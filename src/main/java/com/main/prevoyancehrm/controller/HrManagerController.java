@@ -46,8 +46,6 @@ public class HrManagerController {
         Salary salary = new Salary();
 
         if(request.getRole()==null){
-            salary.setGrossSalary(request.getGrossSalary());
-            this.salaryServiceImpl.addSalary(salary);
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage("you need to pass role");
             response.setHttpStatusCode(500);
@@ -67,7 +65,7 @@ public class HrManagerController {
             response.setHttpStatusCode(500);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
+        
         User user = new User();
         user = userServiceImpl.getUserByEmail(request.getEmail());
         if(user==null || user.getId()!=request.getId()){
@@ -81,6 +79,9 @@ public class HrManagerController {
         String name = user.getFirstName();
         String position = user.getProfessionalDetail().getPosition();
         String mobileNo = user.getMobileNo();
+        salary.setGrossSalary(request.getGrossSalary());
+        salary.setUser(user);
+        this.salaryServiceImpl.addSalary(salary);
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
         this.userServiceImpl.registerUser(user);
         try{
