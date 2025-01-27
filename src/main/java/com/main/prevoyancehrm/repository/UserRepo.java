@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
+import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.entities.User;
 
 

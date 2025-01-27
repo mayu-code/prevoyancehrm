@@ -13,4 +13,5 @@ public interface UserService {
     void deleteCandidate(long id);
     List<Candidates> getAllCandidates(String query,String department);
     List<Candidates> getAllEmployees(String query,String department);
+    
 }

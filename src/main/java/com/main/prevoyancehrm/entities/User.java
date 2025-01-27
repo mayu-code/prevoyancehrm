@@ -65,6 +65,9 @@ public class User implements UserDetails{
 
     @OneToOne(mappedBy = "user")
     private BankDetails bankDetails;
+
+    @OneToOne(mappedBy = "user")
+    private Salary salary;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

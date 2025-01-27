@@ -83,6 +83,8 @@ public class HrManagerController {
         salary.setUser(user);
         this.salaryServiceImpl.addSalary(salary);
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
+        user.setActive(true);
+        user.setEmployee(true);
         this.userServiceImpl.registerUser(user);
         try{
             response.setHttpStatus(HttpStatus.OK);

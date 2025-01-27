@@ -49,7 +49,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(new JwtValidator(), UsernamePasswordAuthenticationFilter.class); // Injected JwtValidator
+            .addFilterBefore(new JwtValidator(), UsernamePasswordAuthenticationFilter.class); 
         return http.build();
     }
 
@@ -65,7 +65,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174")); // Move to properties in production
+            configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
             configuration.setAllowedMethods(Collections.singletonList("*"));
             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
             configuration.setAllowCredentials(true);

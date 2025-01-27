@@ -37,7 +37,6 @@ public class Salary {
     @OneToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
-
     private User user;
 
     @OneToMany(mappedBy = "salary",fetch = FetchType.LAZY,cascade = CascadeType.ALL)
