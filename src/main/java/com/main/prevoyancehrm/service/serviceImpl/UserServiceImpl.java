@@ -64,5 +64,11 @@ public class UserServiceImpl implements UserService{
         user.setPassword(null);
         return user;
     }
+
+    @Override
+    public List<User> exportEmployee(String position, String department) {
+        Role role = Role.CANDIDATE;
+        return this.userRepo.importUsers(position,department,role);
+    }
     
 }

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 @RestController
@@ -26,6 +27,13 @@ public class UserHandlerController {
     @GetMapping("/getProfile")
     public ResponseEntity<DataResponse> getProfile(@RequestHeader("Authorization")String jwt){
         DataResponse response = new DataResponse();
+        if(JwtProvider.isTokenExpired(jwt)){
+            response.setHttpStatus(HttpStatus.EXPECTATION_FAILED);
+            response.setMessage("you session is expired ! please login again");
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
+        }
+        
         User user = new User();
         user = this.userServiceImpl.getUserByJwt(jwt);
         try{
