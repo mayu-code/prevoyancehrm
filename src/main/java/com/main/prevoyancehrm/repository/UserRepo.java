@@ -20,7 +20,7 @@ public interface UserRepo extends JpaRepository<User,Long>{
         u.id, u.email, u.firstName, u.lastName, u.mobileNo,u.role, u.professionalDetail.position, u.professionalDetail.department
     ) 
     FROM User u 
-    WHERE (:query IS NULL OR (u.firstName LIKE %:query% OR u.lastName LIKE %:query% OR u.email LIKE %:query%  OR u.mobileNo LIKE %:query%))
+    WHERE (:query IS NULL OR (u.firstName LIKE %:query% OR u.lastName LIKE %:query% OR u.email LIKE %:query%  OR u.mobileNo LIKE %:query% OR u.professionalDetail.position LIKE %:query%))
     AND (:department IS NULL OR u.professionalDetail.department =:department )
     AND (:role IS NULL OR u.role =:role)
     """)
@@ -34,7 +34,7 @@ public interface UserRepo extends JpaRepository<User,Long>{
                 u.id, u.email, u.firstName, u.lastName, u.mobileNo,u.role, u.professionalDetail.position, u.professionalDetail.department
             ) 
             FROM User u 
-            WHERE (:query IS NULL OR (u.firstName LIKE %:query% OR u.lastName LIKE %:query% OR u.email LIKE %:query%  OR u.mobileNo LIKE %:query%))
+            WHERE (:query IS NULL OR (u.firstName LIKE %:query% OR u.lastName LIKE %:query% OR u.email LIKE %:query%  OR u.mobileNo LIKE %:query% OR u.professionalDetail.position LIKE %:query%))
             AND (:department IS NULL OR u.professionalDetail.department =:department )
             AND (:role IS NULL OR u.role <> :role)
             """)

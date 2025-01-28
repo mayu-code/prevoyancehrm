@@ -39,6 +39,7 @@ public class HrManagerController {
     @Autowired
     private SalaryServiceImpl salaryServiceImpl;
 
+
     @PostMapping("/onboardEmployee")
     public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@RequestBody OnboardingRequest request){
         SuccessResponse response = new SuccessResponse();
@@ -85,6 +86,7 @@ public class HrManagerController {
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
         user.setActive(true);
         user.setEmployee(true);
+        
         this.userServiceImpl.registerUser(user);
         try{
             response.setHttpStatus(HttpStatus.OK);

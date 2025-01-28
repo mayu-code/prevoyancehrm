@@ -68,6 +68,12 @@ public class User implements UserDetails{
 
     @OneToOne(mappedBy = "user")
     private Salary salary;
+
+    @OneToMany(mappedBy = "user")
+    private List<Leaves> leaves;
+
+    @OneToMany(mappedBy = "user")
+    private List<LeaveType> leaveTypes;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
