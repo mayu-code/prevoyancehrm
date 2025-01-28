@@ -4,7 +4,10 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +24,8 @@ import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.helper.ExcelFormater;
+import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
@@ -86,7 +91,7 @@ public class HrManagerController {
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
         user.setActive(true);
         user.setEmployee(true);
-        
+
         this.userServiceImpl.registerUser(user);
         try{
             response.setHttpStatus(HttpStatus.OK);
@@ -140,4 +145,32 @@ public class HrManagerController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @GetMapping("/importEmployees")
+    public ResponseEntity<?> importEmployee(@RequestParam(required = false)String position,
+                                            @RequestParam(required = false)String department
+                                                        ){
+        try{
+            byte[] excelBytes = ExcelFormater.exportEmployee(this.userServiceImpl.exportEmployee(position, department));
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employees.xlsx");
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+
+            // Send the file as a response
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentLength(excelBytes.length)
+                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .body(new ByteArrayResource(excelBytes));
+        }catch(Exception e){
+            DataResponse response = new DataResponse();
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
 }

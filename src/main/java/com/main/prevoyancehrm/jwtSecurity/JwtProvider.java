@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 import org.springframework.security.core.Authentication;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
@@ -35,12 +36,30 @@ public class JwtProvider {
     }
 
     public static String getRoleFromToken(String jwt) {
-        jwt = jwt.substring(7); // Removing "Bearer " prefix
+        jwt = jwt.substring(7); 
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(jwt)
                 .getBody();
-        return claims.get("role").toString(); // Extract role from token
+        return claims.get("role").toString();
+    }
+
+     public static boolean isTokenExpired(String jwt) {
+        try {
+            jwt = jwt.substring(7); // Removing "Bearer " prefix
+            Claims claims = Jwts.parser()
+                    .setSigningKey(key)
+                    .build()
+                    .parseClaimsJws(jwt)
+                    .getBody();
+
+            Date expiration = claims.getExpiration(); 
+            return expiration.before(new Date()); // Return true if the token is expired
+        } catch (ExpiredJwtException e) {
+            return true; // Token has already expired
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking token expiration: " + e.getMessage());
+        }
     }
 }

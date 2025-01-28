@@ -8,7 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
-import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.entities.User;
 
 
@@ -41,4 +40,15 @@ public interface UserRepo extends JpaRepository<User,Long>{
     List<Candidates> findAllEmployees(@Param("query") String query,
                                 @Param("department") String department,
                                 @Param("role")Role role);
+
+    @Query("""
+            SELECT u 
+            FROM User u
+            WHERE (:position IS NULL OR u.professionalDetail.position=:position)
+            AND (:department IS NULL OR u.professionalDetail.department =:department )
+            AND (:role IS NULL OR u.role <> :role)
+            """)
+    List<User> importUsers(@Param("position") String position,
+                           @Param("department") String department,
+                           @Param("role")Role role);
 }

@@ -12,6 +12,7 @@ public interface UserService {
     User getEmployeeById(long id);
     User getUserByJwt(String jwt);
     void deleteCandidate(long id);
+    List<User> exportEmployee(String position,String department);
     List<Candidates> getAllCandidates(String query,String department);
     List<Candidates> getAllEmployees(String query,String department);
     
