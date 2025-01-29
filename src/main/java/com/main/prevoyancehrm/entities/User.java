@@ -35,12 +35,14 @@ public class User implements UserDetails{
     private String email;
     private String firstName;
     private String lastName;
+    private String gender;
     private String password;
     private String mobileNo;
     private String emgMobileNo;
     private String officialEmail;
     private String dob;
     private String adharNo;
+    private String employeeId;
 
     @Column(columnDefinition = "LONGTEXT")
     private String image;

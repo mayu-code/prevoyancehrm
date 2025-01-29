@@ -15,5 +15,6 @@ public interface UserService {
     List<User> exportEmployee(String position,String department);
     List<Candidates> getAllCandidates(String query,String department);
     List<Candidates> getAllEmployees(String query,String department);
+    List<Candidates> employeesBirthday();
     
 }

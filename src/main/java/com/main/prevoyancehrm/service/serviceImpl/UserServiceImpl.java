@@ -70,5 +70,11 @@ public class UserServiceImpl implements UserService{
         Role role = Role.CANDIDATE;
         return this.userRepo.importUsers(position,department,role);
     }
+
+    @Override
+    public List<Candidates> employeesBirthday() {
+        Role role = Role.CANDIDATE;
+        return this.userRepo.findUsersWithBirthdayToday(role);
+    }
     
 }

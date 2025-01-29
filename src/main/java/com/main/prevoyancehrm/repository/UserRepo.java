@@ -51,4 +51,15 @@ public interface UserRepo extends JpaRepository<User,Long>{
     List<User> importUsers(@Param("position") String position,
                            @Param("department") String department,
                            @Param("role")Role role);
+
+    @Query("""
+        SELECT new com.main.prevoyancehrm.dto.ResponseDto.Candidates(
+                u.id, u.email, u.firstName, u.lastName, u.mobileNo,u.role, u.professionalDetail.position, u.professionalDetail.department
+            ) 
+        FROM User u 
+        WHERE FUNCTION('DATE_FORMAT', u.dob, '%m-%d') = FUNCTION('DATE_FORMAT', CURRENT_DATE, '%m-%d')
+        AND (:role IS NULL OR u.role <> :role)
+        """)
+    List<Candidates> findUsersWithBirthdayToday(@Param("role")Role role);
+                    
 }

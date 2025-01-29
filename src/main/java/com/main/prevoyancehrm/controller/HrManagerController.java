@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.OnboardingRequest;
@@ -43,6 +45,9 @@ public class HrManagerController {
 
     @Autowired
     private SalaryServiceImpl salaryServiceImpl;
+
+    @Autowired
+    private ExcelFormater excelFormater;
 
 
     @PostMapping("/onboardEmployee")
@@ -146,28 +151,44 @@ public class HrManagerController {
         }
     }
 
-    @GetMapping("/importEmployees")
-    public ResponseEntity<?> importEmployee(@RequestParam(required = false)String position,
+    @GetMapping("/exportEmployees")
+    public ResponseEntity<?> exportEmployee(@RequestParam(required = false)String position,
                                             @RequestParam(required = false)String department
                                                         ){
-        try{
-            byte[] excelBytes = ExcelFormater.exportEmployee(this.userServiceImpl.exportEmployee(position, department));
+        try{ 
+            byte[] excelBytes = this.excelFormater.exportEmployee(this.userServiceImpl.exportEmployee(position, department));
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=employees.xlsx");
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            ByteArrayResource resource = new ByteArrayResource(excelBytes);
 
-            // Send the file as a response
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentLength(excelBytes.length)
-                    .contentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
-                    .body(new ByteArrayResource(excelBytes));
+                    return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    .body(resource);
+                    // return ResponseEntity.status(HttpStatus.OK).body("ok");
         }catch(Exception e){
             DataResponse response = new DataResponse();
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage(e.getMessage());
             response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+    }
+
+    @PostMapping("/importCandidates")
+    public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file){
+        SuccessResponse response = new SuccessResponse();
+        try{
+            this.excelFormater.importCandidates(file);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setHttpStatusCode(200);
+            response.setMessage("Candidates Added Successfully ! ");
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setHttpStatusCode(500);
+            response.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
