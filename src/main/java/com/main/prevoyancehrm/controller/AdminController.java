@@ -261,18 +261,6 @@ public class AdminController {
             detail.setOfferLetter(request.getOfferLetter());
             detail.setSalarySlip(request.getSalarySlip());
             detail.setReasonOfLeaving(request.getReasonOfLeaving());
-        }else{
-            User user = this.userServiceImpl.getUserById(request.getUserId());
-            detail.setCompanyName(request.getCompanyName());
-            detail.setDesignation(request.getDesignation());
-            detail.setDuration(request.getDuration());
-            detail.setAnnualCTC(request.getAnnualCTC());
-            detail.setOfferLetter(request.getOfferLetter());
-            detail.setSalarySlip(request.getSalarySlip());
-            detail.setReasonOfLeaving(request.getReasonOfLeaving());
-            detail.setUser(user);
-
-            this.experienceDetailsServiceImpl.addExperienceDetail(detail);
         }
         
         try{ 

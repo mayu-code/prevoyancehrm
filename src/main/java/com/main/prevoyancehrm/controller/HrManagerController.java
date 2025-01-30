@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,10 +23,10 @@ import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.OnboardingRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.helper.ExcelFormater;
-import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
@@ -96,8 +95,9 @@ public class HrManagerController {
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
         user.setActive(true);
         user.setEmployee(true);
-
         this.userServiceImpl.registerUser(user);
+        BalanceLeaves balanceLeaves = new BalanceLeaves();
+        balanceLeaves.setUser(user);
         try{
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("Employee Onboard Successfully!");
@@ -193,5 +193,19 @@ public class HrManagerController {
         }
     }
 
+    public ResponseEntity<SuccessResponse> importEmployees(@RequestPart("file")MultipartFile file){
+        SuccessResponse response = new SuccessResponse();
+        try{
+            response.setHttpStatus(HttpStatus.OK);
+            response.setHttpStatusCode(200);
+            response.setMessage("Employees Added Successfully ! ");
+            return ResponseEntity.of(Optional.of(response));
 
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setHttpStatusCode(500);
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 }

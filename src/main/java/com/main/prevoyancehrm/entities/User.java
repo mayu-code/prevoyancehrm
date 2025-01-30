@@ -74,8 +74,8 @@ public class User implements UserDetails{
     @OneToMany(mappedBy = "user")
     private List<Leaves> leaves;
 
-    @OneToMany(mappedBy = "user")
-    private List<LeaveType> leaveTypes;
+    @OneToOne(mappedBy = "user")
+    private BalanceLeaves balanceLeaves;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

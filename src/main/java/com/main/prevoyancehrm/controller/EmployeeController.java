@@ -7,11 +7,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.prevoyancehrm.dto.RequestDto.AddNewExperience;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
+import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateExperienceDetail;
+import com.main.prevoyancehrm.entities.ExperienceDetail;
+import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
+
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 
 
@@ -22,6 +32,9 @@ public class EmployeeController {
     
     @Autowired
     private UserServiceImpl userServiceImpl;
+
+    @Autowired
+    private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
 
     @GetMapping("/AllBirthdays")
     public ResponseEntity<DataResponse> allBirthdays(){
@@ -39,4 +52,89 @@ public class EmployeeController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
+
+    @PostMapping("/addNewExperience")
+    public ResponseEntity<SuccessResponse> addExperienceDetail(@RequestBody AddNewExperience request){
+        SuccessResponse response = new SuccessResponse();
+        ExperienceDetail experienceDetail = new ExperienceDetail();
+        User user=new User();
+        try{
+            user = this.userServiceImpl.getEmployeeById(request.getUserId());
+            experienceDetail.setCompanyName(request.getCompanyName());
+            experienceDetail.setDesignation(request.getDesignation());
+            experienceDetail.setAnnualCTC(request.getAnnualCTC());
+            experienceDetail.setDuration(request.getDuration());
+            experienceDetail.setOfferLetter(request.getOfferLetter());
+            experienceDetail.setSalarySlip(request.getSalarySlip());
+            experienceDetail.setReasonOfLeaving(request.getReasonOfLeaving());
+            experienceDetail.setUser(user);
+
+            this.experienceDetailsServiceImpl.addExperienceDetail(experienceDetail);
+            
+            response.setHttpStatus(HttpStatus.OK);
+            response.setHttpStatusCode(200);
+            response.setMessage("Experience Added successfully ! ");
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/updateExperienceDetail")
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request){
+        SuccessResponse response = new SuccessResponse();
+        ExperienceDetail detail = new ExperienceDetail();
+        if(request.getId()!=0){
+            detail = this.experienceDetailsServiceImpl.getExperienceDetailById(request.getId());
+
+            detail.setCompanyName(request.getCompanyName());
+            detail.setDesignation(request.getDesignation());
+            detail.setDuration(request.getDuration());
+            detail.setAnnualCTC(request.getAnnualCTC());
+            detail.setOfferLetter(request.getOfferLetter());
+            detail.setSalarySlip(request.getSalarySlip());
+            detail.setReasonOfLeaving(request.getReasonOfLeaving());
+            this.experienceDetailsServiceImpl.updateExperienceDetail(detail);
+        }else{
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("id is must to pass");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }
+        
+        try{ 
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Update Experience Detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/deleteExperience")
+    public ResponseEntity<SuccessResponse> deleteExperienceDetail(@PathVariable("id")long id){
+        SuccessResponse response = new SuccessResponse();
+        try{ 
+            this.experienceDetailsServiceImpl.deleteExperienceDetailById(id);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Delete Experience Detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    
 }

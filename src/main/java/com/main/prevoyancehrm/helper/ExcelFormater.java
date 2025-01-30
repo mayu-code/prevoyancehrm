@@ -171,34 +171,34 @@ public class ExcelFormater {
        while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
 
-            // user.setFirstName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);   
-            // user.setLastName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);   
-            // user.setGender(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);  
-            // user.setEmail(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);  
-            // user.setOfficialEmail(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null); 
-            // user.setMobileNo(row.getCell(5) != null ? row.getCell(5).getStringCellValue() : null); 
-            // user.setEmgMobileNo(row.getCell(6) != null ? row.getCell(6).getStringCellValue() : null);
-            // user.setDob(row.getCell(7) != null ? row.getCell(7).getStringCellValue() : null);
-            // user.setAdharNo(row.getCell(8) != null ? row.getCell(8).getStringCellValue() : null);
-            // user.setPresentAddress(row.getCell(9) != null ? row.getCell(9).getStringCellValue() : null);
-            // user.setPermanentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
+            user.setFirstName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);   
+            user.setLastName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);   
+            user.setGender(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);  
+            user.setEmail(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);  
+            user.setOfficialEmail(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null); 
+            user.setMobileNo(row.getCell(5) != null ? row.getCell(5).getStringCellValue() : null); 
+            user.setEmgMobileNo(row.getCell(6) != null ? row.getCell(6).getStringCellValue() : null);
+            user.setDob(row.getCell(7) != null ? row.getCell(7).getStringCellValue() : null);
+            user.setAdharNo(row.getCell(8) != null ? row.getCell(8).getStringCellValue() : null);
+            user.setPresentAddress(row.getCell(9) != null ? row.getCell(9).getStringCellValue() : null);
+            user.setPermanentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
 
-            // bankDetails.setBankName(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null); 
-            // bankDetails.setBankAccountNo(row.getCell(12) != null ? row.getCell(12).getStringCellValue() : null); 
-            // bankDetails.setIfscCode(row.getCell(13) != null ? row.getCell(13).getStringCellValue() : null); 
-            // bankDetails.setPanNo(row.getCell(14) != null ? row.getCell(14).getStringCellValue() : null); 
-            // bankDetails.setUanNo(row.getCell(15) != null ? row.getCell(15).getStringCellValue() : null); 
+            bankDetails.setBankName(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null); 
+            bankDetails.setBankAccountNo(row.getCell(12) != null ? row.getCell(12).getStringCellValue() : null); 
+            bankDetails.setIfscCode(row.getCell(13) != null ? row.getCell(13).getStringCellValue() : null); 
+            bankDetails.setPanNo(row.getCell(14) != null ? row.getCell(14).getStringCellValue() : null); 
+            bankDetails.setUanNo(row.getCell(15) != null ? row.getCell(15).getStringCellValue() : null); 
 
-            // professionalDetail.setTotalExperience(row.getCell(16) != null ? row.getCell(16).getStringCellValue() : null); 
-            // professionalDetail.setLocation(row.getCell(17) != null ? row.getCell(17).getStringCellValue() : null); 
-            // professionalDetail.setHireSource(row.getCell(18) != null ? row.getCell(18).getStringCellValue() : null); 
-            // professionalDetail.setPosition(row.getCell(19) != null ? row.getCell(19).getStringCellValue() : null); 
-            // professionalDetail.setDepartment(row.getCell(20) != null ? row.getCell(20).getStringCellValue() : null); 
-            // professionalDetail.setSkills(row.getCell(21) != null ? row.getCell(21).getStringCellValue() : null); 
-            // professionalDetail.setHighestQualification(row.getCell(22) != null ? row.getCell(22).getStringCellValue() : null); 
-            // professionalDetail.setCurrentSalary(row.getCell(23) != null ? row.getCell(23).getNumericCellValue() : 0); 
-            // professionalDetail.setJoiningDate(row.getCell(24) != null ? row.getCell(24).getStringCellValue() : null); 
-            // professionalDetail.setAdditionalInfo(row.getCell(25) != null ? row.getCell(25).getStringCellValue() : null); 
+            professionalDetail.setTotalExperience(row.getCell(16) != null ? row.getCell(16).getStringCellValue() : null); 
+            professionalDetail.setLocation(row.getCell(17) != null ? row.getCell(17).getStringCellValue() : null); 
+            professionalDetail.setHireSource(row.getCell(18) != null ? row.getCell(18).getStringCellValue() : null); 
+            professionalDetail.setPosition(row.getCell(19) != null ? row.getCell(19).getStringCellValue() : null); 
+            professionalDetail.setDepartment(row.getCell(20) != null ? row.getCell(20).getStringCellValue() : null); 
+            professionalDetail.setSkills(row.getCell(21) != null ? row.getCell(21).getStringCellValue() : null); 
+            professionalDetail.setHighestQualification(row.getCell(22) != null ? row.getCell(22).getStringCellValue() : null); 
+            professionalDetail.setCurrentSalary(row.getCell(23) != null ? row.getCell(23).getNumericCellValue() : 0); 
+            professionalDetail.setJoiningDate(row.getCell(24) != null ? row.getCell(24).getStringCellValue() : null); 
+            professionalDetail.setAdditionalInfo(row.getCell(25) != null ? row.getCell(25).getStringCellValue() : null); 
        }
 
        workbook.close();

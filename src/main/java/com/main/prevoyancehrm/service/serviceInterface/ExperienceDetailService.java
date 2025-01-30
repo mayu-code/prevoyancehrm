@@ -5,4 +5,7 @@ import com.main.prevoyancehrm.entities.ExperienceDetail;
 public interface ExperienceDetailService{
     ExperienceDetail addExperienceDetail(ExperienceDetail experienceDetail);
     ExperienceDetail getExperienceDetailById(long id);
+    ExperienceDetail updateExperienceDetail(ExperienceDetail experienceDetail);
+    void deleteExperienceDetailById(long id);
+
 }

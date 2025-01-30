@@ -1,10 +1,10 @@
-package com.main.prevoyancehrm.dto.updateRequestDto;
+package com.main.prevoyancehrm.dto.RequestDto;
 
 import lombok.Data;
 
 @Data
-public class UpdateExperienceDetail {
-    private long id;
+public class AddNewExperience {
+    private long userId;
     private String companyName;
     private String designation;
     private String duration;
