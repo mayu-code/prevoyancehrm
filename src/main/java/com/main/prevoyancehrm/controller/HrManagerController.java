@@ -27,6 +27,7 @@ import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.helper.ExcelFormater;
+import com.main.prevoyancehrm.service.serviceImpl.BalanceLeaveServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
@@ -47,6 +48,9 @@ public class HrManagerController {
 
     @Autowired
     private ExcelFormater excelFormater;
+
+    @Autowired
+    private BalanceLeaveServiceImpl balanceLeaveServiceImpl;
 
 
     @PostMapping("/onboardEmployee")
@@ -98,6 +102,7 @@ public class HrManagerController {
         this.userServiceImpl.registerUser(user);
         BalanceLeaves balanceLeaves = new BalanceLeaves();
         balanceLeaves.setUser(user);
+        this.balanceLeaveServiceImpl.addBalanceLeaves(balanceLeaves);
         try{
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("Employee Onboard Successfully!");
