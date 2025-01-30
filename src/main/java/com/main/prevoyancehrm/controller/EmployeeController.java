@@ -12,12 +12,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.prevoyancehrm.dto.RequestDto.AddNewEducation;
 import com.main.prevoyancehrm.dto.RequestDto.AddNewExperience;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.dto.updateRequestDto.UpdateEducationDetail;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdateExperienceDetail;
+import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -35,6 +39,9 @@ public class EmployeeController {
 
     @Autowired
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
+
+    @Autowired
+    private EducationDetailServiceImpl educationDetailServiceImpl;
 
     @GetMapping("/AllBirthdays")
     public ResponseEntity<DataResponse> allBirthdays(){
@@ -119,13 +126,93 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/deleteExperience")
+    @PostMapping("/deleteExperience/{id}")
     public ResponseEntity<SuccessResponse> deleteExperienceDetail(@PathVariable("id")long id){
         SuccessResponse response = new SuccessResponse();
         try{ 
             this.experienceDetailsServiceImpl.deleteExperienceDetailById(id);
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("Delete Experience Detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/deleteEducation/{id}")
+    public ResponseEntity<SuccessResponse> deleteEducationDetail(@PathVariable("id")long id){
+        SuccessResponse response = new SuccessResponse();
+        try{ 
+            this.educationDetailServiceImpl.deleteEducationById(id);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Delete Education Detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+
+    @PostMapping("/updateEducationDetail")
+    public ResponseEntity<SuccessResponse> updateEducationDetail(@RequestBody UpdateEducationDetail request){
+        SuccessResponse response = new SuccessResponse();
+        EducationDetail detail = new EducationDetail();
+        if(request.getId()!=0){
+            detail = this.educationDetailServiceImpl.getEducationDetailById(request.getId());
+            detail.setDegree(request.getDegree());
+            detail.setCollege(request.getCollege());
+            detail.setField(request.getField());
+            detail.setPassingYear(request.getPassingYear());
+            detail.setMarksInPercent(request.getMarksInPercent());
+            detail.setAdditionalNote(request.getAdditionalNote());
+        }else{
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("id must need to past");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }
+        try{
+            this.educationDetailServiceImpl.addEducationDetail(detail);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update Education detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/addNewEducation")
+    public ResponseEntity<SuccessResponse> addNewEducation(@RequestBody AddNewEducation request){
+        SuccessResponse response = new SuccessResponse();
+        EducationDetail educationDetail = new EducationDetail();
+        User user = this.userServiceImpl.getUserById(request.getUserId());
+        try{
+            educationDetail.setCollege(request.getCollege());
+            educationDetail.setDegree(request.getDegree());
+            educationDetail.setField(request.getField());
+            educationDetail.setMarksInPercent(request.getMarksInPercent());
+            educationDetail.setPassingYear(request.getPassingYear());
+            educationDetail.setUser(user);
+
+            this.educationDetailServiceImpl.addEducationDetail(educationDetail);
+
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("update Education detail successfully !");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
 

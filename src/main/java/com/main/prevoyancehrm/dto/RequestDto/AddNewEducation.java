@@ -1,10 +1,10 @@
-package com.main.prevoyancehrm.dto.updateRequestDto;
+package com.main.prevoyancehrm.dto.RequestDto;
 
 import lombok.Data;
 
 @Data
-public class UpdateEducationDetail {
-    private long id;
+public class AddNewEducation {
+    private long userId;
     private String degree;
     private String college;
     private String field;

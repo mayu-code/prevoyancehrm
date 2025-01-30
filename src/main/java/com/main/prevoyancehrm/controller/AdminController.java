@@ -209,43 +209,6 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/updateEducationDetail")
-    public ResponseEntity<SuccessResponse> updateEducationDetail(@RequestBody UpdateEducationDetail request){
-        SuccessResponse response = new SuccessResponse();
-        EducationDetail detail = new EducationDetail();
-        if(request.getId()!=0){
-            detail = this.educationDetailServiceImpl.getEducationDetailById(request.getId());
-            detail.setDegree(request.getDegree());
-            detail.setCollege(request.getCollege());
-            detail.setField(request.getField());
-            detail.setPassingYear(request.getPassingYear());
-            detail.setMarksInPercent(request.getMarksInPercent());
-            detail.setAdditionalNote(request.getAdditionalNote());
-        }else{
-            User user = this.userServiceImpl.getUserById(request.getUserId());
-
-            detail.setDegree(request.getDegree());
-            detail.setCollege(request.getCollege());
-            detail.setField(request.getField());
-            detail.setPassingYear(request.getPassingYear());
-            detail.setMarksInPercent(request.getMarksInPercent());
-            detail.setAdditionalNote(request.getAdditionalNote());
-            detail.setUser(user);;
-        }
-        try{
-            this.educationDetailServiceImpl.addEducationDetail(detail);
-            response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("update Education detail successfully !");
-            response.setHttpStatusCode(200);
-            return ResponseEntity.of(Optional.of(response));
-
-        }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
 
     @PostMapping("/updateExperienceDetail")
     public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request){

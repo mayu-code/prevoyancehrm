@@ -22,5 +22,16 @@ public class EducationDetailServiceImpl implements EducationDetailService{
     public EducationDetail getEducationDetailById(long id) {
         return this.educationDetailRepo.findById(id).get();
     }
+
+    @Override
+    public EducationDetail updateEducationDetail(EducationDetail educationDetail) {
+        return this.educationDetailRepo.save(educationDetail);
+    }
+
+    @Override
+    public void deleteEducationById(long id) {
+        this.educationDetailRepo.deleteById(id);
+        return ;
+    }
     
 }
