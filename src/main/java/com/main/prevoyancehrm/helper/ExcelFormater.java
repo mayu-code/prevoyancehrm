@@ -125,8 +125,7 @@ public class ExcelFormater {
             user.setPermanentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
 
             user = this.userServiceImpl.registerUser(user);
-            System.out.println(user.toString());
-            System.out.println("ok");
+    
             bankDetails.setBankName(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null); 
             bankDetails.setBankAccountNo(row.getCell(12) != null ? String.valueOf(row.getCell(12).getNumericCellValue()) :null); 
             bankDetails.setIfscCode(row.getCell(13) != null ? row.getCell(13).getStringCellValue() : null); 
@@ -159,10 +158,6 @@ public class ExcelFormater {
        Workbook workbook = new XSSFWorkbook(file.getInputStream());
        Sheet sheet = workbook.getSheetAt(0);
 
-       User user = new User();
-       ProfessionalDetail professionalDetail = new ProfessionalDetail();
-       BankDetails bankDetails = new BankDetails();
-
        Iterator<Row> rowIterator = sheet.iterator();
        if(rowIterator.hasNext()){
             rowIterator.next();
@@ -170,6 +165,9 @@ public class ExcelFormater {
 
        while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
+            User user = new User();
+            ProfessionalDetail professionalDetail = new ProfessionalDetail();
+            BankDetails bankDetails = new BankDetails();
 
             user.setFirstName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);   
             user.setLastName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);   
