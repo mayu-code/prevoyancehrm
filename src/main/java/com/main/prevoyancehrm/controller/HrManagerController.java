@@ -1,5 +1,7 @@
 package com.main.prevoyancehrm.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -32,6 +34,8 @@ import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/hrManager")
 @CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
@@ -54,7 +58,7 @@ public class HrManagerController {
 
 
     @PostMapping("/onboardEmployee")
-    public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@RequestBody OnboardingRequest request){
+    public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@Valid @RequestBody OnboardingRequest request){
         SuccessResponse response = new SuccessResponse();
         User userEmployee = this.userServiceImpl.getUserByJwt(jwt);
         Salary salary = new Salary();
@@ -96,6 +100,7 @@ public class HrManagerController {
         salary.setGrossSalary(request.getGrossSalary());
         salary.setUser(user);
         this.salaryServiceImpl.addSalary(salary);
+
         CompletableFuture.runAsync(()->emailServiceImpl.welcomeEmail(email,name,position,mobileNo));
         user.setActive(true);
         user.setEmployee(true);
@@ -183,13 +188,21 @@ public class HrManagerController {
     @PostMapping("/importCandidates")
     public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file){
         SuccessResponse response = new SuccessResponse();
+        List<String> errorEmails = new ArrayList<>();
         try{
-            this.excelFormater.importCandidates(file);
-            response.setHttpStatus(HttpStatus.OK);
-            response.setHttpStatusCode(200);
-            response.setMessage("Candidates Added Successfully ! ");
-            return ResponseEntity.of(Optional.of(response));
-
+            errorEmails= this.excelFormater.importCandidates(file);
+            if(errorEmails.isEmpty()){
+                response.setHttpStatus(HttpStatus.OK);
+                response.setHttpStatusCode(200);
+                response.setMessage("Candidates Added Successfully ! ");
+                return ResponseEntity.of(Optional.of(response));
+            }else{
+                response.setHttpStatus(HttpStatus.OK);
+                response.setHttpStatusCode(200);
+                response.setMessage(errorEmails.toString()+"this users information is not fomated , rest are added successfully");
+                return ResponseEntity.of(Optional.of(response));
+            }
+            
         }catch(Exception e){
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setHttpStatusCode(500);
@@ -198,6 +211,7 @@ public class HrManagerController {
         }
     }
 
+    @PostMapping("/importEmployees")
     public ResponseEntity<SuccessResponse> importEmployees(@RequestPart("file")MultipartFile file){
         SuccessResponse response = new SuccessResponse();
         try{
@@ -210,6 +224,48 @@ public class HrManagerController {
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setHttpStatusCode(500);
             response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/getEmptyCandidateSheet")
+    public ResponseEntity<?> exportEmptyCandidateSheet(){
+        try{ 
+            byte[] excelBytes = this.excelFormater.emptyCandidateSheet();
+
+            ByteArrayResource resource = new ByteArrayResource(excelBytes);
+
+                    return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    .body(resource);
+                    // return ResponseEntity.status(HttpStatus.OK).body("ok");
+        }catch(Exception e){
+            DataResponse response = new DataResponse();
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/getEmptyEmployeeSheet")
+    public ResponseEntity<?> exportEmptyEmployeeSheet(){
+        try{ 
+            byte[] excelBytes = this.excelFormater.emptyEmployeeSheet();
+
+            ByteArrayResource resource = new ByteArrayResource(excelBytes);
+
+                    return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
+                    .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+                    .body(resource);
+                    // return ResponseEntity.status(HttpStatus.OK).body("ok");
+        }catch(Exception e){
+            DataResponse response = new DataResponse();
+            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            response.setMessage(e.getMessage());
+            response.setHttpStatusCode(500);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }

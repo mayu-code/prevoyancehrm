@@ -27,6 +27,8 @@ import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin
@@ -38,9 +40,8 @@ public class AuthController {
    @Autowired
    private CustomUserDetail customUserDetail;
 
-   
    @PostMapping("/register")
-   public ResponseEntity<SuccessResponse> registerUser(@RequestBody RegisterRequest request){
+   public ResponseEntity<SuccessResponse> registerUser(@Valid @RequestBody RegisterRequest request){
     SuccessResponse response = new SuccessResponse();
     User user1 = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user1!=null){
@@ -61,7 +62,6 @@ public class AuthController {
     user.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
     user.setFirstName(request.getName());
     user.setRole(Role.HREXECUTIVE);
-    System.out.println(user.toString());
     try{
         this.userServiceImpl.registerUser(user);
         response.setHttpStatus(HttpStatus.OK);
@@ -78,7 +78,7 @@ public class AuthController {
    }
 
    @PostMapping("/createPassword")
-   public ResponseEntity<SuccessResponse> createPassword(@RequestBody CreatePasswordRequest request){
+   public ResponseEntity<SuccessResponse> createPassword(@Valid @RequestBody CreatePasswordRequest request){
     SuccessResponse response = new SuccessResponse();
     User user = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user==null){
@@ -121,7 +121,7 @@ public class AuthController {
    }
 
    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request){
+    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest request){
         LoginResponse response = new LoginResponse();
         User user = this.userServiceImpl.getUserByEmail(request.getEmail());
         if(user==null){
@@ -171,6 +171,5 @@ public class AuthController {
             throw new UsernameNotFoundException("Invalid credentials ");
         }
         return new UsernamePasswordAuthenticationToken(details,password,details.getAuthorities());
-
     }
 }

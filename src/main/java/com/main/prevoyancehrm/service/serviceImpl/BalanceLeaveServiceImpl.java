@@ -16,5 +16,9 @@ public class BalanceLeaveServiceImpl implements BalanceLeavesService{
     public BalanceLeaves addBalanceLeaves(BalanceLeaves balanceLeaves) {
         return this.balaceLeaves.save(balanceLeaves);
     }
+    @Override
+    public BalanceLeaves getAllBalanceLeaves(long id) {
+        return this.balaceLeaves.findBalanceLeavesByUserId(id);
+    }
     
 }

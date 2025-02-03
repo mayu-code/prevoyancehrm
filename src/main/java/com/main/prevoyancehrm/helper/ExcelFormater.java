@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -97,9 +98,10 @@ public class ExcelFormater {
         return outputStream.toByteArray();
     } 
     
-    public  void importCandidates(MultipartFile file) throws IOException{
+    public  List<String> importCandidates(MultipartFile file) throws IOException{
         Workbook workbook = new XSSFWorkbook(file.getInputStream());
         Sheet sheet = workbook.getSheetAt(0);
+        List<String> errorEmails = new ArrayList<>();
  
         Iterator<Row> rowIterator = sheet.iterator();
         if(rowIterator.hasNext()){
@@ -112,28 +114,24 @@ public class ExcelFormater {
             ProfessionalDetail professionalDetail = new ProfessionalDetail();
             BankDetails bankDetails = new BankDetails();
  
+            try{
             user.setFirstName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);   
             user.setLastName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);   
             user.setGender(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);  
             user.setEmail(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);  
             user.setOfficialEmail(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null); 
-            user.setMobileNo(row.getCell(5) != null ? String.valueOf(row.getCell(5).getNumericCellValue()) :null ); 
-            user.setEmgMobileNo(row.getCell(6) != null ? String.valueOf(row.getCell(6).getNumericCellValue()) :null);
-            user.setAdharNo(row.getCell(7) != null ? String.valueOf(row.getCell(7).getNumericCellValue()) :null );
-            user.setDob(row.getCell(8) != null ? String.valueOf(row.getCell(8).getNumericCellValue()) :null);
+            user.setMobileNo(row.getCell(5) != null ? String.valueOf((long)row.getCell(5).getNumericCellValue()) :null ); 
+            user.setEmgMobileNo(row.getCell(6) != null ? String.valueOf((long)row.getCell(6).getNumericCellValue()) :null);
+            user.setAdharNo(row.getCell(7) != null ? String.valueOf((long)row.getCell(7).getNumericCellValue()) :null );
+            user.setDob(row.getCell(8) != null ? row.getCell(8).getStringCellValue() :null);
             user.setPresentAddress(row.getCell(9) != null ? row.getCell(9).getStringCellValue() : null);
             user.setPermanentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
 
-            user = this.userServiceImpl.registerUser(user);
-    
             bankDetails.setBankName(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null); 
-            bankDetails.setBankAccountNo(row.getCell(12) != null ? String.valueOf(row.getCell(12).getNumericCellValue()) :null); 
+            bankDetails.setBankAccountNo(row.getCell(12) != null ? String.valueOf((long)row.getCell(12).getNumericCellValue()) :null); 
             bankDetails.setIfscCode(row.getCell(13) != null ? row.getCell(13).getStringCellValue() : null); 
             bankDetails.setPanNo(row.getCell(14) != null ? row.getCell(14).getStringCellValue():null); 
-            bankDetails.setUanNo(row.getCell(15) != null ? String.valueOf(row.getCell(15).getNumericCellValue()) :null); 
-
-            bankDetails.setUser(user);
-            this.bankDetailsServiceImpl.addBankDetails(bankDetails);
+            bankDetails.setUanNo(row.getCell(15) != null ? String.valueOf((long)row.getCell(15).getNumericCellValue()) :null); 
 
             professionalDetail.setTotalExperience(row.getCell(16) != null ? row.getCell(16).getStringCellValue() : null); 
             professionalDetail.setLocation(row.getCell(17) != null ? row.getCell(17).getStringCellValue() : null); 
@@ -143,15 +141,24 @@ public class ExcelFormater {
             professionalDetail.setSkills(row.getCell(21) != null ? row.getCell(21).getStringCellValue() : null); 
             professionalDetail.setHighestQualification(row.getCell(22) != null ? row.getCell(22).getStringCellValue() : null); 
             professionalDetail.setCurrentSalary(row.getCell(23) != null ? (double)row.getCell(23).getNumericCellValue() : 0); 
-            professionalDetail.setJoiningDate(row.getCell(24) != null ? String.valueOf(row.getCell(12).getNumericCellValue()) :null); 
+            professionalDetail.setJoiningDate(row.getCell(24) != null ? row.getCell(24).getStringCellValue():null); 
             professionalDetail.setAdditionalInfo(row.getCell(25) != null ? row.getCell(25).getStringCellValue() : null);
-            
+
+            user = this.userServiceImpl.registerUser(user);
+
+            bankDetails.setUser(user);
+            this.bankDetailsServiceImpl.addBankDetails(bankDetails);
+
             professionalDetail.setUser(user);
             this.professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
+            }catch(Exception e){
+                errorEmails.add(user.getEmail());
+                continue;
+            }
         }
  
         workbook.close();
-        return;
+        return errorEmails;
     }
 
     public void importEmployee(MultipartFile file) throws IOException{
@@ -202,6 +209,120 @@ public class ExcelFormater {
        workbook.close();
        return;
 
+    }
+
+    public byte[] emptyCandidateSheet() throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Users");
+    
+        // // Header Row
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"Employee Id","First Name", "Last Name","Gender", "Email", "Official Email", "Mobile No", "Emergency Mobile No",
+            "Adhar No","dob", "Present Address", "Permanent Address", "Bank Name", "Account No", "IFSC Code", "Pan No", "UAN No", 
+            "Total Experience", "Location","Source of hire", "Position", "Department",
+           "Skills", "Highest Qualification","Current Salary", "Joining Date", "Adition info"};
+    
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+        Row row = sheet.createRow(1);
+        row.createCell(0).setCellValue("ABC123");
+        row.createCell(0).setCellValue("John");
+        row.createCell(1).setCellValue("Doe");
+        row.createCell(2).setCellValue("Male");
+        row.createCell(3).setCellValue("john.doe@example.com");
+        row.createCell(4).setCellValue("john.doe@company.com");
+        row.createCell(5).setCellValue(1234567890);
+        row.createCell(6).setCellValue(987654321);
+        row.createCell(7).setCellValue(12345677792l);
+        row.createCell(8).setCellValue("1990-01-15"); 
+        row.createCell(9).setCellValue("123 Main St, New York");
+        row.createCell(10).setCellValue("456 Elm St, Los Angeles");
+        row.createCell(11).setCellValue("ABC Bank");
+        row.createCell(12).setCellValue(9876543210l);
+        row.createCell(13).setCellValue("IFSC0001234");
+        row.createCell(14).setCellValue("ABCDE1234F");
+        row.createCell(15).setCellValue(123456789012l);
+        row.createCell(16).setCellValue("5 Years");
+        row.createCell(17).setCellValue("New York");
+        row.createCell(18).setCellValue("LinkedIn");
+        row.createCell(19).setCellValue("Software Engineer");
+        row.createCell(20).setCellValue("IT Department");
+        row.createCell(21).setCellValue("Java, Spring Boot, React");
+        row.createCell(22).setCellValue("Master's in Computer Science");
+        row.createCell(23).setCellValue(80000);
+        row.createCell(24).setCellValue("2023-06-15");
+        row.createCell(25).setCellValue("Top performer in Java Development");
+
+
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+    
+        return outputStream.toByteArray();
+    }
+
+    public byte[] emptyEmployeeSheet() throws IOException {
+        Workbook workbook = new XSSFWorkbook();
+        Sheet sheet = workbook.createSheet("Users");
+    
+        // // Header Row
+        Row headerRow = sheet.createRow(0);
+        String[] headers = {"First Name", "Last Name","Gender", "Email", "Official Email", "Mobile No", "Emergency Mobile No",
+            "Adhar No","dob", "Present Address", "Permanent Address", "Bank Name", "Account No", "IFSC Code", "Pan No", "UAN No", 
+            "Total Experience", "Location","Source of hire", "Position", "Department",
+           "Skills", "Highest Qualification","Current Salary", "Joining Date", "Adition info"};
+    
+        for (int i = 0; i < headers.length; i++) {
+            Cell cell = headerRow.createCell(i);
+            cell.setCellValue(headers[i]);
+        }
+
+        Row row = sheet.createRow(1);
+        
+        row.createCell(0).setCellValue("John");
+        row.createCell(1).setCellValue("Doe");
+        row.createCell(2).setCellValue("Male");
+        row.createCell(3).setCellValue("john.doe@example.com");
+        row.createCell(4).setCellValue("john.doe@company.com");
+        row.createCell(5).setCellValue(1234567890);
+        row.createCell(6).setCellValue(987654321);
+        row.createCell(7).setCellValue(12345677792l);
+        row.createCell(8).setCellValue("1990-01-15"); 
+        row.createCell(9).setCellValue("123 Main St, New York");
+        row.createCell(10).setCellValue("456 Elm St, Los Angeles");
+        row.createCell(11).setCellValue("ABC Bank");
+        row.createCell(12).setCellValue(9876543210l);
+        row.createCell(13).setCellValue("IFSC0001234");
+        row.createCell(14).setCellValue("ABCDE1234F");
+        row.createCell(15).setCellValue(123456789012l);
+        row.createCell(16).setCellValue("5 Years");
+        row.createCell(17).setCellValue("New York");
+        row.createCell(18).setCellValue("LinkedIn");
+        row.createCell(19).setCellValue("Software Engineer");
+        row.createCell(20).setCellValue("IT Department");
+        row.createCell(21).setCellValue("Java, Spring Boot, React");
+        row.createCell(22).setCellValue("Master's in Computer Science");
+        row.createCell(23).setCellValue(80000);
+        row.createCell(24).setCellValue("2023-06-15");
+        row.createCell(25).setCellValue("Top performer in Java Development");
+
+
+        for (int i = 0; i < headers.length; i++) {
+            sheet.autoSizeColumn(i);
+        }
+    
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        workbook.write(outputStream);
+        workbook.close();
+    
+        return outputStream.toByteArray();
     }
 }
 

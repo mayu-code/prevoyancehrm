@@ -16,5 +16,6 @@ public interface UserService {
     List<Candidates> getAllCandidates(String query,String department);
     List<Candidates> getAllEmployees(String query,String department);
     List<Candidates> employeesBirthday();
+    Candidates getUserByMobileNo(String mobileNo);
     
 }

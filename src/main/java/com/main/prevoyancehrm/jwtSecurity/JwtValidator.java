@@ -3,13 +3,13 @@ package com.main.prevoyancehrm.jwtSecurity;
 import java.io.IOException;
 import java.util.List;
 
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +28,16 @@ public class JwtValidator extends OncePerRequestFilter{
                     String role = JwtProvider.getRoleFromToken(jwt);
                     Authentication authentication = new UsernamePasswordAuthenticationToken(email,null, List.of(new SimpleGrantedAuthority(role)));
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                }catch(Exception e){
-                    throw new BadCredentialsException("bad Credentials");
+                }catch (ExpiredJwtException e) { 
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"Token has expired, please login again\"}");
+                    return;
+                } catch (Exception e) { 
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"error\": \"Invalid token, authentication failed\"}");
+                    return;
                 }
             }
             filterChain.doFilter(request, response);

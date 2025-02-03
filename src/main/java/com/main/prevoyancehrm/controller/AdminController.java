@@ -32,6 +32,8 @@ import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
+import jakarta.validation.Valid;
+
 
 
 @RestController
@@ -55,7 +57,7 @@ public class AdminController {
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
     
     @PostMapping("/deleteCandidate")
-    public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<Long> ids){
+    public ResponseEntity<SuccessResponse> deleteCandidate(@Valid @RequestBody List<Long> ids){
         SuccessResponse response = new SuccessResponse();
         try{
             for(long id:ids){
@@ -75,7 +77,7 @@ public class AdminController {
     }
 
     @GetMapping("/getEmployeeById/{id}")
-    public ResponseEntity<DataResponse> getEmployeeById(@PathVariable("id")long id){
+    public ResponseEntity<DataResponse> getEmployeeById(@Valid @PathVariable("id")long id){
         DataResponse response = new DataResponse();
         try{
             response.setData(this.userServiceImpl.getEmployeeById(id));
@@ -93,7 +95,7 @@ public class AdminController {
     }
 
     @PostMapping("/updatePersonalDetail")
-    public ResponseEntity<SuccessResponse> updatePersonalDetail(@RequestBody UpdatePersonalDetail request){
+    public ResponseEntity<SuccessResponse> updatePersonalDetail(@Valid @RequestBody UpdatePersonalDetail request){
         SuccessResponse response = new SuccessResponse();
         User user = this.userServiceImpl.getUserById(request.getId());
         if(user==null){
@@ -140,7 +142,7 @@ public class AdminController {
     }
 
     @PostMapping("/updateBankDetail")
-    public ResponseEntity<SuccessResponse> updateBankDetail(@RequestBody UpdateBankDetail request){
+    public ResponseEntity<SuccessResponse> updateBankDetail(@Valid @RequestBody UpdateBankDetail request){
         SuccessResponse response = new SuccessResponse();
         BankDetails bankDetails = this.bankDetailServiceImpl.getBankDetailsById(request.getId());
         if(bankDetails==null){
@@ -172,7 +174,7 @@ public class AdminController {
     }
 
     @PostMapping("/updateProfessionalDetail")
-    public ResponseEntity<SuccessResponse> updateProfessionalDetail(@RequestBody UpdateProfessionalDetail request){
+    public ResponseEntity<SuccessResponse> updateProfessionalDetail(@Valid @RequestBody UpdateProfessionalDetail request){
         SuccessResponse response = new SuccessResponse();
         ProfessionalDetail detail = this.professionalDetailServiceImpl.getProfessionalDetailById(request.getId());
         if(detail==null){
@@ -211,7 +213,7 @@ public class AdminController {
 
 
     @PostMapping("/updateExperienceDetail")
-    public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request){
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request){
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();
         if(request.getId()!=0){

@@ -22,7 +22,7 @@ public class Leaves {
     private String leaveType;
     private String startDate;
     private String endDate;
-    private int totalDays;
+    private float totalDays;
 
 
     @ManyToOne

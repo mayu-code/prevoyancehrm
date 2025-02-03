@@ -17,8 +17,8 @@ public class BalanceLeaves {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private float paidLeaves=18f;
-    private float balaceLeaves=18f;
+    private float paidLeaves=18;
+    private float balaceLeaves=18;
     private float leavesTaken=0;
 
     @OneToOne

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
+import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.User;
 
 
@@ -61,5 +62,24 @@ public interface UserRepo extends JpaRepository<User,Long>{
         AND (:role IS NULL OR u.role <> :role)
         """)
     List<Candidates> findUsersWithBirthdayToday(@Param("role")Role role);
+
+
+    @Query("""
+            SELECT new com.main.prevoyancehrm.dto.ResponseDto.Candidates(
+                u.id, u.email, u.firstName, u.lastName, u.mobileNo,u.role, u.professionalDetail.position, u.professionalDetail.department
+            )
+                FROM User u
+                WHERE (:mobileNo IS NULL OR u.mobileNo=:mobileNO)
+                AND (:role IS NULL OR u.role<>:role)
+            """)
+    Candidates findUserByMobileNo(@Param("mobileNo")String mobileNo,@Param("role")Role role);
+
+    @Query("""
+            SELECT u.balanceLeaves 
+            FROM User u
+            WHERE u.id=:id
+            AND (:role IS NULL OR u.role<>:role)
+            """)
+    BalanceLeaves findBalanceLeavesByUserId(@Param("id")long id,@Param("role")Role role);
                     
 }
