@@ -26,6 +26,8 @@ import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
+import jakarta.validation.Valid;
+
 
 
 @RestController
@@ -60,7 +62,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/addNewExperience")
-    public ResponseEntity<SuccessResponse> addExperienceDetail(@RequestBody AddNewExperience request){
+    public ResponseEntity<SuccessResponse> addExperienceDetail(@Valid @RequestBody AddNewExperience request){
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail experienceDetail = new ExperienceDetail();
         User user=new User();
@@ -90,7 +92,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/updateExperienceDetail")
-    public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request){
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request){
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();
         if(request.getId()!=0){
@@ -163,7 +165,7 @@ public class EmployeeController {
 
 
     @PostMapping("/updateEducationDetail")
-    public ResponseEntity<SuccessResponse> updateEducationDetail(@RequestBody UpdateEducationDetail request){
+    public ResponseEntity<SuccessResponse> updateEducationDetail(@Valid @RequestBody UpdateEducationDetail request){
         SuccessResponse response = new SuccessResponse();
         EducationDetail detail = new EducationDetail();
         if(request.getId()!=0){
@@ -196,7 +198,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/addNewEducation")
-    public ResponseEntity<SuccessResponse> addNewEducation(@RequestBody AddNewEducation request){
+    public ResponseEntity<SuccessResponse> addNewEducation(@Valid @RequestBody AddNewEducation request){
         SuccessResponse response = new SuccessResponse();
         EducationDetail educationDetail = new EducationDetail();
         User user = this.userServiceImpl.getUserById(request.getUserId());
@@ -206,12 +208,13 @@ public class EmployeeController {
             educationDetail.setField(request.getField());
             educationDetail.setMarksInPercent(request.getMarksInPercent());
             educationDetail.setPassingYear(request.getPassingYear());
+            educationDetail.setAdditionalNote(request.getAdditionalNote());
             educationDetail.setUser(user);
 
             this.educationDetailServiceImpl.addEducationDetail(educationDetail);
 
             response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("update Education detail successfully !");
+            response.setMessage("Education detail Added successfully !");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
 
