@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -21,7 +22,7 @@ public class BalanceLeaves {
     private float balaceLeaves=18;
     private float leavesTaken=0;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;

@@ -53,25 +53,25 @@ public class User implements UserDetails{
     @Enumerated(EnumType.STRING)
     private Role role = Role.CANDIDATE;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EducationDetail> educationDetails;
 
-    @OneToMany(mappedBy = "user",fetch = FetchType.LAZY ,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExperienceDetail> experienceDetail;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private ProfessionalDetail professionalDetail;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private BankDetails bankDetails;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Salary salary;
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Leaves> leaves;
 
-    @OneToOne(mappedBy = "user")
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private BalanceLeaves balanceLeaves;
     
     @Override

@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -34,7 +35,7 @@ public class ProfessionalDetail {
     @Column(columnDefinition = "LONGTEXT")
     private String offerLetter;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
     @JsonIgnore
     private User user;

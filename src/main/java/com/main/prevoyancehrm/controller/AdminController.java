@@ -17,12 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdateBankDetail;
-import com.main.prevoyancehrm.dto.updateRequestDto.UpdateEducationDetail;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdateExperienceDetail;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdatePersonalDetail;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdateProfessionalDetail;
 import com.main.prevoyancehrm.entities.BankDetails;
-import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.User;
@@ -57,9 +55,10 @@ public class AdminController {
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
     
     @PostMapping("/deleteCandidate")
-    public ResponseEntity<SuccessResponse> deleteCandidate(@Valid @RequestBody List<Long> ids){
+    public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<Long> ids){
         SuccessResponse response = new SuccessResponse();
         try{
+            System.out.println(ids.toString());
             for(long id:ids){
                 this.userServiceImpl.deleteCandidate(id);
             }
@@ -218,14 +217,15 @@ public class AdminController {
         ExperienceDetail detail = new ExperienceDetail();
         if(request.getId()!=0){
             detail = this.experienceDetailsServiceImpl.getExperienceDetailById(request.getId());
-
             detail.setCompanyName(request.getCompanyName());
             detail.setDesignation(request.getDesignation());
-            detail.setDuration(request.getDuration());
             detail.setAnnualCTC(request.getAnnualCTC());
+            detail.setDuration(request.getDuration());
             detail.setOfferLetter(request.getOfferLetter());
             detail.setSalarySlip(request.getSalarySlip());
             detail.setReasonOfLeaving(request.getReasonOfLeaving());
+
+            this.experienceDetailsServiceImpl.addExperienceDetail(detail);
         }
         
         try{ 

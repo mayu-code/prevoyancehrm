@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,7 +33,7 @@ public class SalarySlip {
     private double grossSalary;
     private double netSalary;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salary_id")
     @JsonIgnore
     private Salary salary;

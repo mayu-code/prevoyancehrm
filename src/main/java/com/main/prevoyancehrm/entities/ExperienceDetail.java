@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -32,7 +33,7 @@ public class ExperienceDetail {
     private String reasonOfLeaving;
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user; 

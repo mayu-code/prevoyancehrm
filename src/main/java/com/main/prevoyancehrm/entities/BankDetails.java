@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -24,7 +25,7 @@ public class BankDetails {
     private String panNo;
     private String uanNo;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name="user_id")
     @JsonIgnore
     private User user;

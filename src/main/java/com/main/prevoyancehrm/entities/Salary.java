@@ -34,7 +34,7 @@ public class Salary {
     private double grossSalary;
     private double netSalary;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;
