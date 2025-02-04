@@ -26,7 +26,6 @@ public class ProfessionalDetail {
     private String department;
     private String skills;
     private String highestQualification;
-    private double currentSalary;
     private String joiningDate;
 
     @Column(columnDefinition = "LONGTEXT")

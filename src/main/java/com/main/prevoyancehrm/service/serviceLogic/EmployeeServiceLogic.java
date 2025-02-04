@@ -1,5 +1,9 @@
 package com.main.prevoyancehrm.service.serviceLogic;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +16,14 @@ import com.main.prevoyancehrm.entities.BankDetails;
 import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
+import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.helper.DateTimeFormat;
 import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 @Service
@@ -37,12 +44,16 @@ public class EmployeeServiceLogic {
     @Autowired
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
 
+    @Autowired
+    private SalaryServiceImpl salaryServiceImpl;
+
 
 
     public User addEmployee(EmployeeRequestDto employee){
         User user = new User();
 
         if (employee.getPersonalDetail() != null) {
+            user.setGender(employee.getPersonalDetail().getGender());
             user.setEmail(employee.getPersonalDetail().getEmail());
             user.setFirstName(employee.getPersonalDetail().getFirstName());
             user.setLastName(employee.getPersonalDetail().getLastName()); // Added
@@ -54,6 +65,7 @@ public class EmployeeServiceLogic {
             user.setImage(employee.getPersonalDetail().getImage());
             user.setPresentAddress(employee.getPersonalDetail().getPresentAddress());
             user.setPermanentAddress(employee.getPersonalDetail().getPermanentAddress());
+            user.setRegisterDate(DateTimeFormat.format(LocalDateTime.now()));
         }
         
         user.setActive(true);
@@ -83,12 +95,17 @@ public class EmployeeServiceLogic {
             pDetail.setDepartment(professionalDetail.getDepartment());
             pDetail.setSkills(professionalDetail.getSkills());
             pDetail.setHighestQualification(professionalDetail.getHighestQualification());
-            pDetail.setCurrentSalary(professionalDetail.getCurrentSalary());
             pDetail.setJoiningDate(professionalDetail.getJoiningDate());
             pDetail.setAdditionalInfo(professionalDetail.getAdditionalInfo());
             pDetail.setOfferLetter(professionalDetail.getOfferLetter());
             pDetail.setUser(user);
             this.professionalDetailServiceImpl.addProfessionalDetail(pDetail);
+        }
+        if(employee.getProfessionalDetails().getCurrentSalary()!=0){
+            Salary salary = new Salary();
+            salary.setGrossSalary(employee.getProfessionalDetails().getCurrentSalary());
+            salary.setUser(user);
+            this.salaryServiceImpl.addSalary(salary);
 
         }
 

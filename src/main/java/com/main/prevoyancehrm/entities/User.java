@@ -20,9 +20,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
+@ToString
 public class User implements UserDetails{
     
     @Id
@@ -40,12 +42,14 @@ public class User implements UserDetails{
     private String dob;
     private String adharNo;
     private String employeeId;
+    private String registerDate;
+    private String loginDate;
 
     @Column(columnDefinition = "LONGTEXT")
     private String image;
     private String presentAddress;
     private String permanentAddress;
-
+    
     private boolean employee;
     private boolean approved;
     private boolean active;
@@ -69,10 +73,7 @@ public class User implements UserDetails{
     private Salary salary;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Leaves> leaves;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private BalanceLeaves balanceLeaves;
+    private List<BalanceLeaves> balanceLeaves;
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Entity
@@ -18,11 +18,14 @@ public class BalanceLeaves {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private float paidLeaves=18;
-    private float balaceLeaves=18;
-    private float leavesTaken=0;
+    private float balanceLeaves;
+    private float leavesTaken;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne
+    @JoinColumn(name = "leave_type_id")
+    private LeaveType leaveType;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user;

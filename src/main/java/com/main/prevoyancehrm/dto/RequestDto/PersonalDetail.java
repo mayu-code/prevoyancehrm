@@ -21,6 +21,8 @@ public class PersonalDetail {
     @Pattern(regexp = "^[6-9]\\d{9}$", message = "Invalid mobile number format")
     private String mobileNo;
 
+    private String gender;
+
     @Pattern(regexp = "^[6-9]\\d{9}$", message = "Invalid emergency mobile number format")
     private String emgMobileNo;
 

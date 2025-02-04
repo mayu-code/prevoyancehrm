@@ -1,7 +1,6 @@
 package com.main.prevoyancehrm.config;
 
 import java.util.Arrays;
-import java.util.Collections;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -66,7 +65,7 @@ public class SecurityConfig {
         return request -> {
             CorsConfiguration configuration = new CorsConfiguration();
             configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
-            configuration.setAllowedMethods(Collections.singletonList("*"));
+            configuration.setAllowedMethods(Arrays.asList("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"));
             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
             configuration.setAllowCredentials(true);
             configuration.setExposedHeaders(Arrays.asList("Authorization"));

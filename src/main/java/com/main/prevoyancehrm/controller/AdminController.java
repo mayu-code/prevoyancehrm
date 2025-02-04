@@ -23,11 +23,13 @@ import com.main.prevoyancehrm.dto.updateRequestDto.UpdateProfessionalDetail;
 import com.main.prevoyancehrm.entities.BankDetails;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
+import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 import jakarta.validation.Valid;
@@ -53,6 +55,9 @@ public class AdminController {
 
     @Autowired
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
+
+    @Autowired
+    private SalaryServiceImpl salaryServiceImpl;
     
     @PostMapping("/deleteCandidate")
     public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<Long> ids){
@@ -183,6 +188,7 @@ public class AdminController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
         try{
+            Salary salary = new Salary();
             detail.setTotalExperience(request.getTotalExperience());
             detail.setLocation(request.getLocation());
             detail.setHireSource(request.getHireSource());
@@ -190,12 +196,15 @@ public class AdminController {
             detail.setDepartment(request.getDepartment());
             detail.setSkills(request.getSkills());
             detail.setHighestQualification(request.getHighestQualification());
-            detail.setCurrentSalary(request.getCurrentSalary());
             detail.setJoiningDate(request.getJoiningDate());
             detail.setAdditionalInfo(request.getAdditionalInfo());
             detail.setOfferLetter(request.getOfferLetter());
 
+            salary.setGrossSalary(request.getCurrentSalary());
+            salary.setUser(detail.getUser());
+            
             this.professionalDetailServiceImpl.addProfessionalDetail(detail);
+            this.salaryServiceImpl.addSalary(salary);
             
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("update personal detail successfully !");

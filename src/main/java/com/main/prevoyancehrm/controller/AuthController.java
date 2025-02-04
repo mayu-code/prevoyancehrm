@@ -1,5 +1,6 @@
 package com.main.prevoyancehrm.controller;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import com.main.prevoyancehrm.dto.RequestDto.RegisterRequest;
 import com.main.prevoyancehrm.dto.responseObjects.LoginResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.helper.DateTimeFormat;
 import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
@@ -150,7 +152,8 @@ public class AuthController {
         String role = user.getRole().toString();
         String token = JwtProvider.generateToken(authentication);
         try{
-           
+            user.setLoginDate(DateTimeFormat.format(LocalDateTime.now()));
+            this.userServiceImpl.registerUser(user);
             response.setHttpStatus(HttpStatus.OK);
             response.setHttpStatusCode(200);
             response.setToken(token);

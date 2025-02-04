@@ -17,6 +17,10 @@ public class OnboardingRequest {
     @NotBlank(message = "Role cannot be blank")
     private String role;
 
+    private String joiningDate;
+
+    private String employeeId;
+
     @Positive(message = "Gross salary must be a positive number")
     private Double grossSalary;
 }

@@ -1,8 +1,10 @@
 package com.main.prevoyancehrm.service.serviceInterface;
 
+import java.util.List;
+
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 
 public interface BalanceLeavesService {
     BalanceLeaves addBalanceLeaves(BalanceLeaves balanceLeaves);
-    BalanceLeaves getAllBalanceLeaves(long id);
+    List<BalanceLeaves> getAllBalanceLeaves(long id);
 }
