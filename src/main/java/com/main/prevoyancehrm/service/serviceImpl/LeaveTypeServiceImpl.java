@@ -46,10 +46,10 @@ public class LeaveTypeServiceImpl implements LeavetypeService {
             BalanceLeaves balanceLeaves = new BalanceLeaves();
             balanceLeaves.setBalanceLeaves(leaveType.getMaxAllowed());
             balanceLeaves.setLeavesTaken(0);
-            System.out.println("ok");
             balanceLeaves.setUser(user);
             balanceLeaves.setLeaveType(leaveType);
             this.balanceLeaveServiceImpl.addBalanceLeaves(balanceLeaves);
+            balanceLeaves=null;
         }
         
     }

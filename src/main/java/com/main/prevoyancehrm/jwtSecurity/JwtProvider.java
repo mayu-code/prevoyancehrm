@@ -27,7 +27,8 @@ public class JwtProvider {
     }
 
     public static String getEmailFromToken(String jwt){
-        jwt = jwt.substring(7);
+
+            jwt = jwt.substring(7);
         Claims claims = Jwts.parser()
                         .setSigningKey(key).build()
                         .parseClaimsJws(jwt).getBody();
@@ -36,7 +37,9 @@ public class JwtProvider {
     }
 
     public static String getRoleFromToken(String jwt) {
-        jwt = jwt.substring(7); 
+        
+            jwt = jwt.substring(7);
+        
         Claims claims = Jwts.parser()
                 .setSigningKey(key)
                 .build()

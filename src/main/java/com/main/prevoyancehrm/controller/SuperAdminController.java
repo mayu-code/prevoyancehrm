@@ -19,7 +19,6 @@ import com.main.prevoyancehrm.dto.RequestDto.LeaveTypeRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.LeaveType;
-import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.LeaveTypeServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -62,6 +61,7 @@ public class SuperAdminController {
         SuccessResponse response = new SuccessResponse();
     
         try{
+        
             this.leaveTypeServiceImpl.deleteLeaveType(id);
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("New Leave Type Added Successfully successfully !");
