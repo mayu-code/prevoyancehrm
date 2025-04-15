@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,30 +12,26 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
-@Entity
 @Data
-public class BalanceLeaves {
-
+@Entity
+public class Sessions {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
-    private float balanceLeaves;
-    private float leavesTaken;
+    private Long sessionId;
 
-    @ManyToOne
-    @JoinColumn(name = "leave_type_id")
-    private LeaveType leaveType;
+    private String token;
+    private LocalDateTime issueAt;
+    private LocalDateTime logoutAt;
+    private long expiration;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    private boolean isDelete = false;
+    private boolean isActive = true;
+    
+    private LocalDateTime deleteDate;
+    
+
     @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
-
-    private boolean isDelete=false;
-    private boolean isActive=false;
-
-    private LocalDateTime createAt=LocalDateTime.now();
-    private LocalDateTime modifyAt=LocalDateTime.now();
-    private LocalDateTime deleteAt;
-
 }

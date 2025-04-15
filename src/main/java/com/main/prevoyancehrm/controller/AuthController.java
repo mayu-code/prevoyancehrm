@@ -23,13 +23,15 @@ import com.main.prevoyancehrm.dto.RequestDto.LoginRequest;
 import com.main.prevoyancehrm.dto.RequestDto.RegisterRequest;
 import com.main.prevoyancehrm.dto.responseObjects.LoginResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.entities.Sessions;
 import com.main.prevoyancehrm.entities.User;
-import com.main.prevoyancehrm.helper.DateTimeFormat;
+import com.main.prevoyancehrm.exceptions.UnauthorizeException;
 import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
+import com.main.prevoyancehrm.service.serviceImpl.SessionServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
-import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 
 @RestController
 @RequestMapping("/auth")
@@ -42,8 +44,11 @@ public class AuthController {
    @Autowired
    private CustomUserDetail customUserDetail;
 
+   @Autowired
+   private SessionServiceImpl sessionServiceImpl;
+
    @PostMapping("/register")
-   public ResponseEntity<SuccessResponse> registerUser(@Valid @RequestBody RegisterRequest request){
+   public ResponseEntity<SuccessResponse> registerUser(@RequestBody RegisterRequest request)throws Exception{
     SuccessResponse response = new SuccessResponse();
     User user1 = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user1!=null){
@@ -69,18 +74,15 @@ public class AuthController {
         response.setHttpStatus(HttpStatus.OK);
         response.setMessage("you are Register Successfully !");
         response.setHttpStatusCode(200);
+        System.out.println("ok");
         return ResponseEntity.of(Optional.of(response));
-
     }catch(Exception e){
-        response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        response.setMessage(e.getMessage());
-        response.setHttpStatusCode(500);
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        throw new Exception(e.getMessage());
     }
    }
 
    @PostMapping("/createPassword")
-   public ResponseEntity<SuccessResponse> createPassword(@Valid @RequestBody CreatePasswordRequest request){
+   public ResponseEntity<SuccessResponse> createPassword(@RequestBody CreatePasswordRequest request) throws Exception{
     SuccessResponse response = new SuccessResponse();
     User user = this.userServiceImpl.getUserByEmail(request.getEmail());
     if(user==null){
@@ -108,63 +110,51 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
     user.setPassword(new BCryptPasswordEncoder().encode(request.getPassword()));
-    this.userServiceImpl.registerUser(user);
+    user.setModifyAt(LocalDateTime.now());
+    this.userServiceImpl.updateUser(user);
     try{     
         response.setHttpStatus(HttpStatus.OK);
         response.setHttpStatusCode(200);
         response.setMessage("password created successfully ! ");
         return ResponseEntity.of(Optional.of(response));
     }catch(Exception e){
-        response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-        response.setHttpStatusCode(500);;
-        response.setMessage("something went wrong !");
-        return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+        throw new Exception(e.getMessage());
     }
    }
 
    @PostMapping("/login")
-    public ResponseEntity<LoginResponse> loginUser(@Valid @RequestBody LoginRequest request){
+    public ResponseEntity<LoginResponse> loginUser(@RequestBody LoginRequest request)throws Exception{
         LoginResponse response = new LoginResponse();
         User user = this.userServiceImpl.getUserByEmail(request.getEmail());
         if(user==null){
-            response.setHttpStatus(HttpStatus.UNAUTHORIZED);
-            response.setHttpStatusCode(500);;
-            response.setMessage("Invalid email or password");
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+            throw new EntityNotFoundException("invalid username or password");
         }
         if(user.getRole().equals(Role.EMPLOYEE)){
-            response.setHttpStatus(HttpStatus.UNAUTHORIZED);
-            response.setHttpStatusCode(401);;
-            response.setMessage("Your Are Not Aproved Yet as an HR Please contact Super Admin");
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+            throw new EntityNotFoundException("Your Are Not Aproved Yet as an HR Please contact Super Admin");
         }
         UserDetails userDetails = customUserDetail.loadUserByUsername(request.getEmail());
         boolean isPasswordValid = new BCryptPasswordEncoder().matches(request.getPassword(),userDetails.getPassword() );
 
         if(!isPasswordValid){
-            response.setHttpStatus(HttpStatus.BAD_REQUEST);
-            response.setHttpStatusCode(500);
-            response.setMessage("Invalid email or password");
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+            throw new UnauthorizeException("invalid username of password");
         }
 
         Authentication authentication = authenticate(user.getEmail(), request.getPassword());
         String role = user.getRole().toString();
-        String token = JwtProvider.generateToken(authentication);
+        Sessions session = JwtProvider.generateToken(authentication);
+        session.setUser(user);
+        session.setIssueAt(LocalDateTime.now());
+        this.sessionServiceImpl.addSession(session);
         try{
-            user.setLoginDate(DateTimeFormat.format(LocalDateTime.now()));
-            this.userServiceImpl.registerUser(user);
+            this.userServiceImpl.updateUser(user);
             response.setHttpStatus(HttpStatus.OK);
             response.setHttpStatusCode(200);
-            response.setToken(token);
+            response.setToken(session.getToken());
             response.setRole(role);
             response.setMessage("login successful ! ");
             return ResponseEntity.of(Optional.of(response));
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setHttpStatusCode(500);;
-            response.setMessage("something went wrong !");
-            return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+           throw new Exception(e.getMessage());
         }
     }
 

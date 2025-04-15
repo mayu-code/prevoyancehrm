@@ -1,5 +1,6 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -51,4 +52,12 @@ public class Salary {
         this.netSalary = grossSalary - this.professionalTax;
         this.grossSalary = grossSalary;
     }
+
+
+    private boolean isDelete=false;
+    private boolean isActive=false;
+
+    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime modifyAt=LocalDateTime.now();
+    private LocalDateTime deleteAt;
 }

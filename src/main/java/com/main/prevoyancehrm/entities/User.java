@@ -1,5 +1,6 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -14,8 +15,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
@@ -28,8 +27,7 @@ import lombok.ToString;
 public class User implements UserDetails{
     
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    private String id;
 
     private String email;
     private String firstName;
@@ -43,7 +41,6 @@ public class User implements UserDetails{
     private String adharNo;
     private String employeeId;
     private String registerDate;
-    private String loginDate;
 
     @Column(columnDefinition = "LONGTEXT")
     private String image;
@@ -52,7 +49,13 @@ public class User implements UserDetails{
     
     private boolean employee;
     private boolean approved;
-    private boolean active;
+
+    private boolean isDelete=false;
+    private boolean isActive=false;
+
+    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime modifyAt=LocalDateTime.now();
+    private LocalDateTime deleteAt;
     
     @Enumerated(EnumType.STRING)
     private Role role = Role.CANDIDATE;

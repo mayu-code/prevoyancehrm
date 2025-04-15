@@ -10,7 +10,6 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.EscapedErrors;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,23 +25,23 @@ import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.OnboardingRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
-import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
+import com.main.prevoyancehrm.exceptions.UnauthorizeException;
 import com.main.prevoyancehrm.helper.ExcelFormater;
-import com.main.prevoyancehrm.service.serviceImpl.BalanceLeaveServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 import com.main.prevoyancehrm.service.serviceLogic.EmployeeDefaultAssignElements;
 
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/hrManager")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class HrManagerController {
 
     @Autowired
@@ -61,14 +60,11 @@ public class HrManagerController {
     private EmployeeDefaultAssignElements assignElements;
 
     @Autowired
-    private BalanceLeaveServiceImpl balanceLeaveServiceImpl;
-
-    @Autowired
     private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
 
 
     @PostMapping("/onboardEmployee")
-    public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@Valid @RequestBody OnboardingRequest request){
+    public ResponseEntity<SuccessResponse> onboardEmployee(@RequestHeader("Authorization")String jwt,@Valid @RequestBody OnboardingRequest request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         User userEmployee = this.userServiceImpl.getUserByJwt(jwt);
         ProfessionalDetail professionalDetail = new ProfessionalDetail();
@@ -83,25 +79,16 @@ public class HrManagerController {
         
         Role role = Role.valueOf(request.getRole().toUpperCase());
         if(userEmployee.getRole().equals(Role.HRMANAGER) &&  (role.equals(Role.ADMIN) || role.equals(Role.SUPERADMIN)||role.equals(Role.HRMANAGER))){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage("you don't have credentials to change this role !");
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new UnauthorizeException("you don't have credentials to change this role !");
         }
         if(userEmployee.getRole().equals(Role.ADMIN) &&  (role.equals(Role.ADMIN) || role.equals(Role.SUPERADMIN))){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage("you don't have credentials to change this role !");
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new UnauthorizeException("you don't have credentials to change this role !");
         }
         
         User user = new User();
         user = userServiceImpl.getUserByEmail(request.getEmail());
         if(user==null || user.getId()!=request.getId()){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage("email or id Not match !");
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new EntityNotFoundException("email or id Not match !");
         }
         user.setRole(role);
         String email = user.getEmail();
@@ -121,7 +108,7 @@ public class HrManagerController {
         user.setEmployee(true);
         user.setApproved(true);
         user.setEmployeeId(request.getEmployeeId());   
-        User user2 = this.userServiceImpl.registerUser(user);
+        User user2 = this.userServiceImpl.updateUser(user);
 
         CompletableFuture.runAsync(()->this.assignElements.assignAllLeaveTypes(user2.getId()));
         try{
@@ -131,17 +118,14 @@ public class HrManagerController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getAllCandidates")
     public ResponseEntity<DataResponse> getAllCandidates(@RequestParam(required = false)String query,
                                                          @RequestParam(required = false)String department
-                                                        ){
+                                                        ) throws Exception{
         DataResponse response = new DataResponse();
         try{
             response.setData(this.userServiceImpl.getAllCandidates(query, department));
@@ -151,17 +135,14 @@ public class HrManagerController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+           throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getAllEmployees")
     public ResponseEntity<DataResponse> getAllEmployee(@RequestParam(required = false)String query,
                                                          @RequestParam(required = false)String department
-                                                        ){
+                                                        ) throws Exception{
         DataResponse response = new DataResponse();
         try{
             response.setData(this.userServiceImpl.getAllEmployees(query, department));
@@ -170,17 +151,14 @@ public class HrManagerController {
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/exportEmployees")
     public ResponseEntity<?> exportEmployee(@RequestParam(required = false)String position,
                                             @RequestParam(required = false)String department
-                                                        ){
+                                                        ) throws Exception{
         try{ 
             byte[] excelBytes = this.excelFormater.exportEmployee(this.userServiceImpl.exportEmployee(position, department));
 
@@ -190,19 +168,13 @@ public class HrManagerController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     .body(resource);
-                    // return ResponseEntity.status(HttpStatus.OK).body("ok");
         }catch(Exception e){
-            DataResponse response = new DataResponse();
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
-
     }
 
     @PostMapping("/importCandidates")
-    public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file){
+    public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file) throws Exception{
         SuccessResponse response = new SuccessResponse();
         List<String> errorEmails = new ArrayList<>();
         try{
@@ -220,15 +192,11 @@ public class HrManagerController {
             }
             
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setHttpStatusCode(500);
-            response.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
-
     @PostMapping("/importEmployees")
-    public ResponseEntity<SuccessResponse> importEmployees(@RequestPart("file")MultipartFile file){
+    public ResponseEntity<SuccessResponse> importEmployees(@RequestPart("file")MultipartFile file) throws Exception{
         SuccessResponse response = new SuccessResponse();
         List<String> errorEmails = new ArrayList<>();
         try{
@@ -245,15 +213,12 @@ public class HrManagerController {
                 return ResponseEntity.of(Optional.of(response));
             }
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setHttpStatusCode(500);
-            response.setMessage(e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getEmptyCandidateSheet")
-    public ResponseEntity<?> exportEmptyCandidateSheet(){
+    public ResponseEntity<?> exportEmptyCandidateSheet() throws Exception{
         try{ 
             byte[] excelBytes = this.excelFormater.emptyCandidateSheet();
 
@@ -263,18 +228,13 @@ public class HrManagerController {
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
                     .body(resource);
-                    // return ResponseEntity.status(HttpStatus.OK).body("ok");
         }catch(Exception e){
-            DataResponse response = new DataResponse();
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getEmptyEmployeeSheet")
-    public ResponseEntity<?> exportEmptyEmployeeSheet(){
+    public ResponseEntity<?> exportEmptyEmployeeSheet() throws Exception{
         try{ 
             byte[] excelBytes = this.excelFormater.emptyEmployeeSheet();
 
@@ -286,11 +246,7 @@ public class HrManagerController {
                     .body(resource);
                     // return ResponseEntity.status(HttpStatus.OK).body("ok");
         }catch(Exception e){
-            DataResponse response = new DataResponse();
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception();
         }
     }
 }

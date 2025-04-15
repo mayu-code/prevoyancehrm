@@ -8,7 +8,7 @@ import lombok.Data;
 public class AddNewExperience {
 
     @Positive(message = "User ID must be a positive number")
-    private long userId;
+    private String userId;
 
     @NotBlank(message = "Company name cannot be blank")
     private String companyName;

@@ -15,10 +15,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.RequestDto.EmployeeRequestDto;
-import com.main.prevoyancehrm.dto.RequestDto.leavesRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
-import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.BalanceLeaveServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
@@ -28,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/hrExecutive")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class HrExecutiveController {
     
     @Autowired
@@ -40,8 +38,8 @@ public class HrExecutiveController {
     @Autowired 
     private BalanceLeaveServiceImpl balanceLeaveServiceImpl;
 
-     @PostMapping("/addEmployee")
-    public ResponseEntity<SuccessResponse> addEmployee(@Valid @RequestBody EmployeeRequestDto employee){
+     @PostMapping("/addCandicate")
+    public ResponseEntity<SuccessResponse> addEmployee(@Valid @RequestBody EmployeeRequestDto employee) throws Exception{
 
         SuccessResponse response = new SuccessResponse();
         User user = this.userServiceImpl.getUserByEmail(employee.getPersonalDetail().getEmail());
@@ -61,16 +59,13 @@ public class HrExecutiveController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
 
     @GetMapping("/getUserByMobileNo")
-    public ResponseEntity<DataResponse> getEmployeeByMobileNo(@Valid @RequestParam("mobileNo")String mobileNo){
+    public ResponseEntity<DataResponse> getEmployeeByMobileNo(@Valid @RequestParam("mobileNo")String mobileNo) throws Exception{
         DataResponse response = new DataResponse();
 
         try{
@@ -81,15 +76,12 @@ public class HrExecutiveController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getBalaceLeave/{id}")
-    public ResponseEntity<DataResponse> getBalanceLeavesByUserId(@Valid @PathVariable("id")long id){
+    public ResponseEntity<DataResponse> getBalanceLeavesByUserId(@Valid @PathVariable("id")String id) throws Exception{
         DataResponse response = new DataResponse();
 
         try{
@@ -100,10 +92,7 @@ public class HrExecutiveController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 

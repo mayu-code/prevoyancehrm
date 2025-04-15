@@ -1,6 +1,6 @@
 package com.main.prevoyancehrm.helper;
 
-public class EmailFormater {
+public class EmailFormater1 {
 
     public static String generateWelcomeEmail(String email, String name, String position, String mobileNo) {
         StringBuilder emailContent = new StringBuilder();

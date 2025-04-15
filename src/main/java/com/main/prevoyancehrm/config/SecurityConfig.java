@@ -3,6 +3,7 @@ package com.main.prevoyancehrm.config;
 import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,6 +22,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
 import com.main.prevoyancehrm.jwtSecurity.JwtValidator;
+import com.main.prevoyancehrm.service.serviceImpl.SessionServiceImpl;
 
 @Configuration
 @EnableWebSecurity
@@ -29,10 +31,16 @@ public class SecurityConfig {
     @Autowired
     private CustomUserDetail customUserDetail;
 
+    @Autowired
+    private SessionServiceImpl sessionServiceImpl;
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -48,7 +56,7 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .authenticationProvider(authenticationProvider())
-            .addFilterBefore(new JwtValidator(), UsernamePasswordAuthenticationFilter.class); 
+            .addFilterBefore(new JwtValidator(sessionServiceImpl), UsernamePasswordAuthenticationFilter.class); 
         return http.build();
     }
 
@@ -64,7 +72,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         return request -> {
             CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173", "http://localhost:5174"));
+            configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
             configuration.setAllowedMethods(Arrays.asList("HEAD", "OPTIONS", "GET", "POST", "PUT", "PATCH", "DELETE"));
             configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
             configuration.setAllowCredentials(true);

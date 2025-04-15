@@ -29,7 +29,7 @@ public class EmployeeDefaultAssignElements {
 
     @Async("taskExecutor")
     @Transactional
-    public  void assignAllLeaveTypes(long id){
+    public  void assignAllLeaveTypes(String id){
         List<LeaveType> leaveTypes = this.leaveTypeServiceImpl.getAllLeaveTypes();
         User user2 = this.userServiceImpl.getUserById(id);
         for(LeaveType leaveType :leaveTypes){

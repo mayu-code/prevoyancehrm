@@ -1,5 +1,7 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,4 +16,12 @@ public class Holidays {
     private long id;
     private String date;
     private String name;
+
+
+    private boolean isDelete=false;
+    private boolean isActive=false;
+    
+    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime modifyAt=LocalDateTime.now();
+    private LocalDateTime deleteAt;
 }

@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/hrExecutive")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class EmployeeController {
     
     @Autowired
@@ -45,7 +45,7 @@ public class EmployeeController {
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
     @GetMapping("/AllBirthdays")
-    public ResponseEntity<DataResponse> allBirthdays(){
+    public ResponseEntity<DataResponse> allBirthdays()throws Exception{
         DataResponse response = new DataResponse();
         try{
             response.setData(this.userServiceImpl.employeesBirthday());
@@ -54,10 +54,7 @@ public class EmployeeController {
             response.setMessage("Employee Birthadays get successfully ! ");
             return ResponseEntity.of(Optional.of(response));
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
@@ -92,7 +89,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/updateExperienceDetail")
-    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request){
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();
         if(request.getId()!=0){
@@ -120,15 +117,12 @@ public class EmployeeController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @PostMapping("/deleteExperience/{id}")
-    public ResponseEntity<SuccessResponse> deleteExperienceDetail(@PathVariable("id")long id){
+    public ResponseEntity<SuccessResponse> deleteExperienceDetail(@PathVariable("id")long id) throws Exception{
         SuccessResponse response = new SuccessResponse();
         try{ 
             this.experienceDetailsServiceImpl.deleteExperienceDetailById(id);
@@ -138,15 +132,12 @@ public class EmployeeController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @PostMapping("/deleteEducation/{id}")
-    public ResponseEntity<SuccessResponse> deleteEducationDetail(@PathVariable("id")long id){
+    public ResponseEntity<SuccessResponse> deleteEducationDetail(@PathVariable("id")long id)throws Exception{
         SuccessResponse response = new SuccessResponse();
         try{ 
             this.educationDetailServiceImpl.deleteEducationById(id);
@@ -156,16 +147,13 @@ public class EmployeeController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
 
     @PostMapping("/updateEducationDetail")
-    public ResponseEntity<SuccessResponse> updateEducationDetail(@Valid @RequestBody UpdateEducationDetail request){
+    public ResponseEntity<SuccessResponse> updateEducationDetail(@Valid @RequestBody UpdateEducationDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         EducationDetail detail = new EducationDetail();
         if(request.getId()!=0){
@@ -190,19 +178,16 @@ public class EmployeeController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @PostMapping("/addNewEducation")
-    public ResponseEntity<SuccessResponse> addNewEducation(@Valid @RequestBody AddNewEducation request){
-        SuccessResponse response = new SuccessResponse();
+    public ResponseEntity<?> addNewEducation(@Valid @RequestBody AddNewEducation request)throws Exception{
         EducationDetail educationDetail = new EducationDetail();
         User user = this.userServiceImpl.getUserById(request.getUserId());
         try{
+
             educationDetail.setCollege(request.getCollege());
             educationDetail.setDegree(request.getDegree());
             educationDetail.setField(request.getField());
@@ -210,19 +195,13 @@ public class EmployeeController {
             educationDetail.setPassingYear(request.getPassingYear());
             educationDetail.setAdditionalNote(request.getAdditionalNote());
             educationDetail.setUser(user);
-
             this.educationDetailServiceImpl.addEducationDetail(educationDetail);
 
-            response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("Education detail Added successfully !");
-            response.setHttpStatusCode(200);
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK,200,"Education detail Added successfully !");
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
     

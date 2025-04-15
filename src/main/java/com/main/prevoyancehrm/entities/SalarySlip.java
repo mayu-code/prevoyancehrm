@@ -1,6 +1,7 @@
 package com.main.prevoyancehrm.entities;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -37,4 +38,11 @@ public class SalarySlip {
     @JoinColumn(name = "salary_id")
     @JsonIgnore
     private Salary salary;
+
+    private boolean isDelete=false;
+    private boolean isActive=false;
+
+    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime modifyAt=LocalDateTime.now();
+    private LocalDateTime deleteAt;
 }

@@ -6,5 +6,5 @@ import com.main.prevoyancehrm.entities.BalanceLeaves;
 
 public interface BalanceLeavesService {
     BalanceLeaves addBalanceLeaves(BalanceLeaves balanceLeaves);
-    List<BalanceLeaves> getAllBalanceLeaves(long id);
+    List<BalanceLeaves> getAllBalanceLeaves(String id);
 }

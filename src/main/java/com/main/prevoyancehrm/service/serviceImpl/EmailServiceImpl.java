@@ -6,14 +6,14 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.main.prevoyancehrm.helper.EmailFormater;
-import com.main.prevoyancehrm.service.serviceInterface.EmailService;
+import com.main.prevoyancehrm.helper.EmailFormater1;
+import com.main.prevoyancehrm.service.serviceInterface.EmailService1;
 
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 
 @Service
-public class EmailServiceImpl implements EmailService{
+public class EmailServiceImpl implements EmailService1{
 
     @Autowired
     private  JavaMailSender mailSender;
@@ -28,7 +28,7 @@ public class EmailServiceImpl implements EmailService{
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
             helper.setTo(email);
             helper.setSubject("Welcome In Prevoyance");
-            message.setContent(EmailFormater.generateWelcomeEmail(email,name,position,mobileNo), "text/html"); 
+            message.setContent(EmailFormater1.generateWelcomeEmail(email,name,position,mobileNo), "text/html"); 
             mailSender.send(message);
             return ;
         }catch(Exception e){

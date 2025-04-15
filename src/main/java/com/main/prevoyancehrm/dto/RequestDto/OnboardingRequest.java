@@ -8,7 +8,7 @@ import lombok.Data;
 public class OnboardingRequest {
 
     @Positive(message = "ID must be a positive number")
-    private long id;
+    private String id;
 
     @NotBlank(message = "Email cannot be blank")
     @Email(message = "Invalid email format")

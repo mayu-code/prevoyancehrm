@@ -6,24 +6,32 @@ import javax.crypto.SecretKey;
 
 import org.springframework.security.core.Authentication;
 
+import com.main.prevoyancehrm.entities.Sessions;
+
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 public class JwtProvider {
-    public static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.SECRETE_KEY.getBytes());
+    public static SecretKey key = Keys.hmacShaKeyFor(JwtConstant.getSECRETE_KEY().getBytes());
 
-    public static String generateToken(Authentication auth){
+    public static Sessions generateToken(Authentication auth){
+
+        long expiration = 86400000;
         String jwt = Jwts.builder()
                     .setIssuer("ok").setIssuedAt(new Date())
-                    .setExpiration(new Date(new Date().getTime()+86400000))
+                    .setExpiration(new Date(new Date().getTime()+expiration))
                     .claim("email",auth.getName())
                     .claim("role", auth.getAuthorities().toArray()[0].toString())
                     .signWith(key)
                     .compact();
 
-        return jwt;
+        Sessions session = new Sessions();
+        session.setExpiration(expiration);
+        session.setToken(jwt);
+
+        return session;
     }
 
     public static String getEmailFromToken(String jwt){

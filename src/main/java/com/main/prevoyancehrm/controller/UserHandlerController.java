@@ -18,7 +18,7 @@ import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class UserHandlerController {
     
     @Autowired

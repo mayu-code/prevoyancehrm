@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 
 public interface BalanceLeaveRepo extends JpaRepository<BalanceLeaves,Long>{
-   List<BalanceLeaves> findBalanceLeavesByUserId(long id);
+   List<BalanceLeaves> findBalanceLeavesByUserId(String id);
 }

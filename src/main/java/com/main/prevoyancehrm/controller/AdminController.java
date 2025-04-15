@@ -26,19 +26,18 @@ import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
-import jakarta.validation.Valid;
+import jakarta.persistence.EntityNotFoundException;
 
 
 
 @RestController
 @RequestMapping("/admin")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class AdminController {
 
     @Autowired
@@ -51,37 +50,22 @@ public class AdminController {
     private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
 
     @Autowired
-    private EducationDetailServiceImpl educationDetailServiceImpl;
-
-    @Autowired
     private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
 
     @Autowired
     private SalaryServiceImpl salaryServiceImpl;
     
     @PostMapping("/deleteCandidate")
-    public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<Long> ids){
-        SuccessResponse response = new SuccessResponse();
-        try{
-            System.out.println(ids.toString());
-            for(long id:ids){
-                this.userServiceImpl.deleteCandidate(id);
-            }
-            response.setHttpStatus(HttpStatus.OK);
-            response.setMessage("delete candidates successfully !");
-            response.setHttpStatusCode(200);
-            return ResponseEntity.of(Optional.of(response));
-
-        }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    public ResponseEntity<SuccessResponse> deleteCandidate(@RequestBody List<String> ids) throws Exception{
+        for(String id:ids){
+            this.userServiceImpl.deleteCandidate(id);
         }
+        SuccessResponse response = new SuccessResponse(HttpStatus.OK,200,"delete candidates successfully !");
+        return ResponseEntity.of(Optional.of(response));
     }
 
     @GetMapping("/getEmployeeById/{id}")
-    public ResponseEntity<DataResponse> getEmployeeById(@Valid @PathVariable("id")long id){
+    public ResponseEntity<DataResponse> getEmployeeById(@PathVariable("id")String id) throws Exception{
         DataResponse response = new DataResponse();
         try{
             response.setData(this.userServiceImpl.getEmployeeById(id));
@@ -91,22 +75,16 @@ public class AdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
     }
     }
 
     @PostMapping("/updatePersonalDetail")
-    public ResponseEntity<SuccessResponse> updatePersonalDetail(@Valid @RequestBody UpdatePersonalDetail request){
+    public ResponseEntity<SuccessResponse> updatePersonalDetail(@RequestBody UpdatePersonalDetail request){
         SuccessResponse response = new SuccessResponse();
         User user = this.userServiceImpl.getUserById(request.getId());
         if(user==null){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage("User Not Found!");
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new EntityNotFoundException("User Not found !");
         }
         try{
             
@@ -146,7 +124,7 @@ public class AdminController {
     }
 
     @PostMapping("/updateBankDetail")
-    public ResponseEntity<SuccessResponse> updateBankDetail(@Valid @RequestBody UpdateBankDetail request){
+    public ResponseEntity<SuccessResponse> updateBankDetail(@RequestBody UpdateBankDetail request){
         SuccessResponse response = new SuccessResponse();
         BankDetails bankDetails = this.bankDetailServiceImpl.getBankDetailsById(request.getId());
         if(bankDetails==null){
@@ -178,7 +156,7 @@ public class AdminController {
     }
 
     @PostMapping("/updateProfessionalDetail")
-    public ResponseEntity<SuccessResponse> updateProfessionalDetail(@Valid @RequestBody UpdateProfessionalDetail request){
+    public ResponseEntity<SuccessResponse> updateProfessionalDetail(@RequestBody UpdateProfessionalDetail request){
         SuccessResponse response = new SuccessResponse();
         ProfessionalDetail detail = this.professionalDetailServiceImpl.getProfessionalDetailById(request.getId());
         if(detail==null){
@@ -221,7 +199,7 @@ public class AdminController {
 
 
     @PostMapping("/updateExperienceDetail")
-    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request){
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@RequestBody UpdateExperienceDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();
         if(request.getId()!=0){
@@ -233,7 +211,6 @@ public class AdminController {
             detail.setOfferLetter(request.getOfferLetter());
             detail.setSalarySlip(request.getSalarySlip());
             detail.setReasonOfLeaving(request.getReasonOfLeaving());
-
             this.experienceDetailsServiceImpl.addExperienceDetail(detail);
         }
         
@@ -244,10 +221,7 @@ public class AdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 }

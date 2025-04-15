@@ -8,7 +8,7 @@ import lombok.Data;
 public class AddNewEducation {
 
     @Positive(message = "User ID must be a positive number")
-    private long userId;
+    private String userId;
 
     @NotBlank(message = "Degree cannot be blank")
     private String degree;

@@ -23,7 +23,7 @@ public class BalanceLeaveServiceImpl implements BalanceLeavesService{
         return this.balaceLeavesRepo.save(balanceLeaves);
     }
     @Override
-    public List<BalanceLeaves> getAllBalanceLeaves(long id) {
+    public List<BalanceLeaves> getAllBalanceLeaves(String id) {
         return this.balaceLeavesRepo.findBalanceLeavesByUserId(id);
     }
     

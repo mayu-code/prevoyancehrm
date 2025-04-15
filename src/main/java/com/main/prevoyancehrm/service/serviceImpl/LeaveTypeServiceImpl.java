@@ -1,6 +1,5 @@
 package com.main.prevoyancehrm.service.serviceImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -8,12 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.LeaveType;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.repository.LeaveTypeRepo;
-import com.main.prevoyancehrm.repository.UserRepo;
 import com.main.prevoyancehrm.service.serviceInterface.LeavetypeService;
 
 import jakarta.transaction.Transactional;

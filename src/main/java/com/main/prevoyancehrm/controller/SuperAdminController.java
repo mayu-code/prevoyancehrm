@@ -1,6 +1,5 @@
 package com.main.prevoyancehrm.controller;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
@@ -20,22 +19,19 @@ import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.LeaveType;
 import com.main.prevoyancehrm.service.serviceImpl.LeaveTypeServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 
 @RestController
 @RequestMapping("/superAdmin")
-@CrossOrigin(origins = {"http://localhost:5173/","http://localhost:5174/"})
+@CrossOrigin
 public class SuperAdminController {
 
     @Autowired
     private LeaveTypeServiceImpl leaveTypeServiceImpl;
 
-    @Autowired
-    private UserServiceImpl userServiceImpl;
     
     @PostMapping("/addLeaveType")
-    public ResponseEntity<SuccessResponse> addNewLeaveType(@RequestBody LeaveTypeRequest request){
+    public ResponseEntity<SuccessResponse> addNewLeaveType(@RequestBody LeaveTypeRequest request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         LeaveType leaveType = new LeaveType();
         try{
@@ -49,15 +45,12 @@ public class SuperAdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+           throw new Exception(e.getMessage());
         }
     }
 
     @PostMapping("/deleteLeaveType/{id}")
-    public ResponseEntity<SuccessResponse> deleteNewLeaveType(@PathVariable("id")long id){
+    public ResponseEntity<SuccessResponse> deleteNewLeaveType(@PathVariable("id")long id) throws Exception{
         SuccessResponse response = new SuccessResponse();
     
         try{
@@ -69,15 +62,12 @@ public class SuperAdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 
     @GetMapping("/getAllLeaveType")
-    public ResponseEntity<DataResponse> getAllNewLeaveType(){
+    public ResponseEntity<?> getAllNewLeaveType() throws Exception{
         DataResponse response = new DataResponse();
     
         try{
@@ -88,10 +78,7 @@ public class SuperAdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
-            response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-            response.setMessage(e.getMessage());
-            response.setHttpStatusCode(500);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            throw new Exception(e.getMessage());
         }
     }
 }

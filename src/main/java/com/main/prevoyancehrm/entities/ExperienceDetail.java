@@ -1,5 +1,7 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDateTime;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.CascadeType;
@@ -37,4 +39,11 @@ public class ExperienceDetail {
     @JoinColumn(name = "user_id")
     @JsonIgnore
     private User user; 
+
+    private boolean isDelete=false;
+    private boolean isActive=false;
+
+    private LocalDateTime createAt=LocalDateTime.now();
+    private LocalDateTime modifyAt=LocalDateTime.now();
+    private LocalDateTime deleteAt;
 }
