@@ -1,8 +1,11 @@
 package com.main.prevoyancehrm.service.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.prevoyancehrm.dto.ResponseDto.EducationDetailResponse;
 import com.main.prevoyancehrm.entities.EducationDetail;
 import com.main.prevoyancehrm.repository.EducationDetailRepo;
 import com.main.prevoyancehrm.service.serviceInterface.EducationDetailService;
@@ -32,6 +35,11 @@ public class EducationDetailServiceImpl implements EducationDetailService{
     public void deleteEducationById(long id) {
         this.educationDetailRepo.deleteById(id);
         return ;
+    }
+
+    @Override
+    public List<EducationDetailResponse> getEducationDetailByUser(String id) {
+        return this.educationDetailRepo.findEducationByAndUserId(id);
     }
     
 }

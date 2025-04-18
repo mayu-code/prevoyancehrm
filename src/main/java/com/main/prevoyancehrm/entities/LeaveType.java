@@ -16,6 +16,7 @@ public class LeaveType {
     private Long id;
     private String name;
     private int maxAllowed;
+    private String detail;
 
 
     private boolean isDelete=false;

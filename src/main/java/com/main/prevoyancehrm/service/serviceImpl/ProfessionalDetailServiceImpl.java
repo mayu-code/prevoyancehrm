@@ -3,6 +3,7 @@ package com.main.prevoyancehrm.service.serviceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.prevoyancehrm.dto.ResponseDto.ProfessionalDetailReponse;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.repository.ProfessionalDetailRepo;
 import com.main.prevoyancehrm.service.serviceInterface.ProfessinalDetailService;
@@ -21,6 +22,11 @@ public class ProfessionalDetailServiceImpl implements ProfessinalDetailService{
     @Override
     public ProfessionalDetail getProfessionalDetailById(long id) {
         return this.professionalDetailRepo.findById(id).get();
+    }
+
+    @Override
+    public ProfessionalDetailReponse getProfessionalDetailByUserId(String id) {
+        return this.professionalDetailRepo.findByUserId(id);
     }
     
 }

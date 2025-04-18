@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UpdatePersonalDetail {
-    private String id;
     private String email;
     private String firstName;
     private String lastName;

@@ -70,17 +70,17 @@ public class EmployeeServiceLogic {
         user.setApproved(false);
         user = this.userServiceImpl.registerUser(user);
 
-        BankDetails bankDetails = new BankDetails();
         if (employee.getBankDetail() != null) {
-            BankDetailRequestDto bankDetailRequestDto = employee.getBankDetail();
-            bankDetails.setBankName(bankDetailRequestDto.getBankName());
-            bankDetails.setBankAccountNo(bankDetailRequestDto.getBankAccountNo());
-            bankDetails.setIfscCode(bankDetailRequestDto.getIfscCode());
-            bankDetails.setPanNo(bankDetailRequestDto.getPanNo());
-            bankDetails.setUanNo(bankDetailRequestDto.getUanNo());
-            bankDetails.setUser(user);
-            this.bankDetailServiceImpl.addBankDetails(bankDetails);
-            
+            for(BankDetailRequestDto bankDetailRequestDto : employee.getBankDetail()){
+                BankDetails bankDetails = new BankDetails();
+                bankDetails.setBankName(bankDetailRequestDto.getBankName());
+                bankDetails.setBankAccountNo(bankDetailRequestDto.getBankAccountNo());
+                bankDetails.setIfscCode(bankDetailRequestDto.getIfscCode());
+                bankDetails.setPanNo(bankDetailRequestDto.getPanNo());
+                bankDetails.setUanNo(bankDetailRequestDto.getUanNo());
+                bankDetails.setUser(user);
+                this.bankDetailServiceImpl.addBankDetails(bankDetails); 
+            }
         }
         
         ProfessionalDetail pDetail = new ProfessionalDetail();

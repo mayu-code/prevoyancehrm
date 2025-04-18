@@ -9,6 +9,6 @@ public class EmployeeRequestDto {
     private PersonalDetail personalDetail;
     private List<EducationDetailRequestDTO> educationDetails;
     private ProfessionalDetailRequestDTO professionalDetails;
-    private BankDetailRequestDto bankDetail;
+    private List<BankDetailRequestDto> bankDetail;
     private List<ExperienceDetailRequestDto> experienceDetails;
 }

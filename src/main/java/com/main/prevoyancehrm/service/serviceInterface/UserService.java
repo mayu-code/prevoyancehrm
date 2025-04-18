@@ -4,6 +4,7 @@ import java.util.List;
 
 
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
+import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.entities.User;
 
 public interface UserService {
@@ -13,7 +14,8 @@ public interface UserService {
 
     User getUserByEmail(String email)throws Exception;
     User getUserById(String id)throws Exception;
-    User getEmployeeById(String id)throws Exception;
+    UserResponse getEmployeeById(String id)throws Exception;
+    UserResponse getUserProfile(String email)throws Exception;
     User getUserByJwt(String jwt)throws Exception;
 
     void deleteCandidate(String id)throws Exception;

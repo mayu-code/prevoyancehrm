@@ -1,5 +1,6 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
@@ -14,7 +15,7 @@ public class Holidays {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private String date;
+    private LocalDate date;
     private String name;
 
 

@@ -1,5 +1,6 @@
 package com.main.prevoyancehrm.controller;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,9 +12,15 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.main.prevoyancehrm.dto.ResponseDto.ExperienceDetailResponse;
+import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
-import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
+import com.main.prevoyancehrm.service.serviceImpl.BalanceLeaveServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 @RestController
@@ -23,6 +30,22 @@ public class UserHandlerController {
     
     @Autowired
     private UserServiceImpl userServiceImpl;
+
+    @Autowired
+    private BalanceLeaveServiceImpl balanceLeaveServiceImpl;
+
+    
+    @Autowired
+    private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
+
+    @Autowired
+    private EducationDetailServiceImpl educationDetailServiceImpl;
+
+    @Autowired
+    private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
+
+    @Autowired
+    private BankDetailServiceImpl bankDetailServiceImpl;
 
     @GetMapping("/getProfile")
     public ResponseEntity<DataResponse> getProfile(@RequestHeader("Authorization")String jwt){
@@ -34,9 +57,9 @@ public class UserHandlerController {
             return ResponseEntity.status(HttpStatus.EXPECTATION_FAILED).body(response);
         }
         
-        User user = new User();
-        user = this.userServiceImpl.getUserByJwt(jwt);
+        UserResponse user = new UserResponse();
         try{
+            user = this.userServiceImpl.getUserProfile(jwt);
             response.setHttpStatus(HttpStatus.OK);
             response.setData(user);
             response.setMessage("User profile get Successfully!");
@@ -48,6 +71,95 @@ public class UserHandlerController {
             response.setMessage(e.getMessage());
             response.setHttpStatusCode(500);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @GetMapping("/getExperienceByUser")
+    public ResponseEntity<DataResponse> getExperienceUserId(@RequestHeader("Authorization")String jwt)throws Exception{
+        try{
+            UserResponse user = new UserResponse();
+            user = this.userServiceImpl.getUserProfile(jwt);
+            DataResponse response = new DataResponse();
+            List<ExperienceDetailResponse> response2 = this.experienceDetailsServiceImpl.getExprerienceByUserId(user.getId());
+            response.setData(response2);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("get User Experience successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+    }
+    }
+
+    @GetMapping("/getProfesstionlByUser")
+    public ResponseEntity<DataResponse> getProfesstionlUserId(@RequestHeader("Authorization")String jwt)throws Exception{
+        try{
+            UserResponse user = new UserResponse();
+            user = this.userServiceImpl.getUserProfile(jwt);
+            DataResponse response = new DataResponse();
+            response.setData(this.professionalDetailServiceImpl.getProfessionalDetailByUserId(user.getId()));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("get professional detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+    }
+    }
+
+    @GetMapping("/getEducationByUser")
+    public ResponseEntity<DataResponse> getEducationByUserId(@RequestHeader("Authorization")String jwt)throws Exception{
+        try{
+            UserResponse user = new UserResponse();
+            user = this.userServiceImpl.getUserProfile(jwt);
+            DataResponse response = new DataResponse();
+            response.setData(this.educationDetailServiceImpl.getEducationDetailByUser(user.getId()));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("get Education detail successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+    }
+    }
+
+    @GetMapping("/getBankDetailsByUser")
+    public ResponseEntity<DataResponse> getBankDetailByUserId(@RequestHeader("Authorization")String jwt)throws Exception{
+        try{
+            UserResponse user = new UserResponse();
+            user = this.userServiceImpl.getUserProfile(jwt);
+            DataResponse response = new DataResponse();
+            response.setData(this.bankDetailServiceImpl.getBankDetailByUser(user.getId()));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("get bank Details successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+    }
+    }
+
+    @GetMapping("/getBalanceLeaves")
+    public ResponseEntity<?>getBalanceLeaves(@RequestHeader("Authorization")String jwt)throws Exception{
+        try{
+            UserResponse user = new UserResponse();
+            user = this.userServiceImpl.getUserProfile(jwt);
+            DataResponse response = new DataResponse();
+            response.setData(this.balanceLeaveServiceImpl.getAllBalanceLeaves(user.getId()));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Balance leaves Get successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            throw new Exception();
         }
     }
 }

@@ -60,7 +60,8 @@ public class LeaveTypeServiceImpl implements LeavetypeService {
 
     @Override
     public void deleteLeaveType(long id) {
-        this.leaveTypeRepo.deleteById(id);
+        this.leaveTypeRepo.softDeleteById(id);
+        return;
     }
     
 }

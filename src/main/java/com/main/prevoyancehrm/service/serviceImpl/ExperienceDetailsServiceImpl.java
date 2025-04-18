@@ -1,8 +1,11 @@
 package com.main.prevoyancehrm.service.serviceImpl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.main.prevoyancehrm.dto.ResponseDto.ExperienceDetailResponse;
 import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.repository.ExperienceDetailRepo;
 import com.main.prevoyancehrm.service.serviceInterface.ExperienceDetailService;
@@ -32,6 +35,11 @@ public class ExperienceDetailsServiceImpl implements ExperienceDetailService{
     public void deleteExperienceDetailById(long id) {
         this.experienceDetailRepo.deleteById(id);   
         return;
+    }
+
+    @Override
+    public List<ExperienceDetailResponse> getExprerienceByUserId(String id) {
+        return this.experienceDetailRepo.findAllByUserId(id);
     }
     
 }

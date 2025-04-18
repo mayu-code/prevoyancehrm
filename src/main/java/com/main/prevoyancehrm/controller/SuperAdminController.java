@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,6 +38,7 @@ public class SuperAdminController {
         try{
             leaveType.setMaxAllowed(request.getTotalLeaves());
             leaveType.setName(request.getLeaveType());
+            leaveType.setDetail(request.getDetail());
             LeaveType leaveType2  = this.leaveTypeServiceImpl.addLeaveTypes(leaveType);
             CompletableFuture.runAsync(()->this.leaveTypeServiceImpl.assignLeaveTypesToEmployee(leaveType2));
             response.setHttpStatus(HttpStatus.OK);
@@ -49,7 +51,7 @@ public class SuperAdminController {
         }
     }
 
-    @PostMapping("/deleteLeaveType/{id}")
+    @DeleteMapping("/deleteLeaveType/{id}")
     public ResponseEntity<SuccessResponse> deleteNewLeaveType(@PathVariable("id")long id) throws Exception{
         SuccessResponse response = new SuccessResponse();
     

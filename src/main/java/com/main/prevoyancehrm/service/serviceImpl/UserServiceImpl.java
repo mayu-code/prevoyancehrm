@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
+import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.exceptions.DuplicateEntityException;
 import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
@@ -88,10 +89,9 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public User getEmployeeById(String id) {
-        User user =this.userRepo.findById(id).orElse(null);
-        user.setPassword(null);
-        return user;
+    public UserResponse getEmployeeById(String id) {
+        UserResponse userResponse =this.userRepo.findUserDetailsById(id).orElse(null);
+        return userResponse;
     }
 
     @Override
@@ -115,6 +115,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public List<User> getAllEmployees() {
         return this.userRepo.findAllEmployees(Role.CANDIDATE);
+    }
+
+    @Override
+    public UserResponse getUserProfile(String jwt) throws Exception {
+        String email = JwtProvider.getEmailFromToken(jwt);
+        return this.userRepo.getUserByEmail(email);
     }
     
 }

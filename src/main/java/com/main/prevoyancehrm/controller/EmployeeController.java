@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.main.prevoyancehrm.dto.RequestDto.AddNewEducation;
-import com.main.prevoyancehrm.dto.RequestDto.AddNewExperience;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.dto.updateRequestDto.UpdateEducationDetail;
@@ -24,6 +23,7 @@ import com.main.prevoyancehrm.entities.ExperienceDetail;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.HolidaysServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
 import jakarta.validation.Valid;
@@ -44,6 +44,9 @@ public class EmployeeController {
     @Autowired
     private EducationDetailServiceImpl educationDetailServiceImpl;
 
+    @Autowired
+    private HolidaysServiceImpl holidaysServiceImpl;
+
     @GetMapping("/AllBirthdays")
     public ResponseEntity<DataResponse> allBirthdays()throws Exception{
         DataResponse response = new DataResponse();
@@ -58,13 +61,27 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/addNewExperience")
-    public ResponseEntity<SuccessResponse> addExperienceDetail(@Valid @RequestBody AddNewExperience request){
+    @GetMapping("/getUpcommingHolidays")
+    public ResponseEntity<?> upcommingHolidays()throws Exception{
+        DataResponse response = new DataResponse();
+        try{
+            response.setData(this.holidaysServiceImpl.getAllHolidays());
+            response.setHttpStatus(HttpStatus.OK);
+            response.setHttpStatusCode(200);
+            response.setMessage("Employee Birthadays get successfully ! ");
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/addNewExperience/{userId}")
+    public ResponseEntity<SuccessResponse> addExperienceDetail(@PathVariable("userId")String userId,@Valid @RequestBody ExperienceDetail request){
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail experienceDetail = new ExperienceDetail();
         User user=new User();
         try{
-            user = this.userServiceImpl.getEmployeeById(request.getUserId());
+            user = this.userServiceImpl.getUserById(userId);
             experienceDetail.setCompanyName(request.getCompanyName());
             experienceDetail.setDesignation(request.getDesignation());
             experienceDetail.setAnnualCTC(request.getAnnualCTC());
@@ -88,12 +105,12 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/updateExperienceDetail")
-    public ResponseEntity<SuccessResponse> updateExperienceDetail(@Valid @RequestBody UpdateExperienceDetail request) throws Exception{
+    @PostMapping("/updateExperienceDetail/{experienceId}")
+    public ResponseEntity<SuccessResponse> updateExperienceDetail(@PathVariable("experienceId")long experienceId,@Valid @RequestBody UpdateExperienceDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();
-        if(request.getId()!=0){
-            detail = this.experienceDetailsServiceImpl.getExperienceDetailById(request.getId());
+        if(experienceId!=0){
+            detail = this.experienceDetailsServiceImpl.getExperienceDetailById(experienceId);
 
             detail.setCompanyName(request.getCompanyName());
             detail.setDesignation(request.getDesignation());

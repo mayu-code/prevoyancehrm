@@ -6,4 +6,5 @@ import lombok.Data;
 public class LeaveTypeRequest {
     private String leaveType;
     private int totalLeaves;
+    private String detail;
 }

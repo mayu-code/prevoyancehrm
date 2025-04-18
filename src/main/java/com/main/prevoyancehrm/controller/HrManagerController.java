@@ -44,23 +44,28 @@ import jakarta.validation.Valid;
 @CrossOrigin
 public class HrManagerController {
 
-    @Autowired
-    private UserServiceImpl userServiceImpl;
+    private final UserServiceImpl userServiceImpl;
+    private final EmailServiceImpl emailServiceImpl;
+    private final SalaryServiceImpl salaryServiceImpl;
+    private final ExcelFormater excelFormater;
+    private final EmployeeDefaultAssignElements assignElements;
+    private final ProfessionalDetailServiceImpl professionalDetailServiceImpl;
 
-    @Autowired
-    private EmailServiceImpl emailServiceImpl;
-
-    @Autowired
-    private SalaryServiceImpl salaryServiceImpl;
-
-    @Autowired
-    private ExcelFormater excelFormater;
-
-    @Autowired
-    private EmployeeDefaultAssignElements assignElements;
-
-    @Autowired
-    private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
+    public HrManagerController(
+            UserServiceImpl userServiceImpl,
+            EmailServiceImpl emailServiceImpl,
+            SalaryServiceImpl salaryServiceImpl,
+            ExcelFormater excelFormater,
+            EmployeeDefaultAssignElements assignElements,
+            ProfessionalDetailServiceImpl professionalDetailServiceImpl
+    ) {
+        this.userServiceImpl = userServiceImpl;
+        this.emailServiceImpl = emailServiceImpl;
+        this.salaryServiceImpl = salaryServiceImpl;
+        this.excelFormater = excelFormater;
+        this.assignElements = assignElements;
+        this.professionalDetailServiceImpl = professionalDetailServiceImpl;
+    }
 
 
     @PostMapping("/onboardEmployee")
@@ -87,7 +92,8 @@ public class HrManagerController {
         
         User user = new User();
         user = userServiceImpl.getUserByEmail(request.getEmail());
-        if(user==null || user.getId()!=request.getId()){
+        System.out.println(user.getId());
+        if(user==null || !user.getId().equals(request.getCandidateId())){
             throw new EntityNotFoundException("email or id Not match !");
         }
         user.setRole(role);

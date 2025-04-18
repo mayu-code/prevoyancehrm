@@ -1,9 +1,15 @@
-package com.main.prevoyancehrm.dto.updateRequestDto;
+package com.main.prevoyancehrm.dto.ResponseDto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class UpdateProfessionalDetail {
+@NoArgsConstructor
+@AllArgsConstructor
+public class ProfessionalDetailReponse {
+    private long id;
+
     private String totalExperience;
     private String location;
     private String hireSource;
@@ -11,7 +17,6 @@ public class UpdateProfessionalDetail {
     private String department;
     private String skills;
     private String highestQualification;
-    private double currentSalary;
     private String joiningDate;
     private String additionalInfo;
     private String offerLetter;

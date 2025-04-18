@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UpdateBankDetail {
-    private long id;
     private String bankName;
     private String bankAccountNo;
     private String ifscCode;

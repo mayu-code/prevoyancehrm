@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.ResponseDto.Candidates;
+import com.main.prevoyancehrm.dto.ResponseDto.UserResponse;
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.User;
 
@@ -26,6 +27,19 @@ public interface UserRepo extends JpaRepository<User, String> {
             AND u.isDelete=false
         """)
     User findByEmail(@Param("email") String email);
+
+    @Query("""
+            SELECT new com.main.prevoyancehrm.dto.ResponseDto.UserResponse(
+                u.id, u.email, u.firstName, u.lastName, u.mobileNo, 
+                u.emgMobileNo, u.officialEmail, u.dob, u.adharNo, 
+                u.image, u.presentAddress, u.permanentAddress, u.role
+            )
+            FROM User u
+            WHERE u.email=:email AND u.isDelete = false
+        """)
+    UserResponse getUserByEmail(@Param("email")String email);
+
+
 
     @Query("""
             SELECT new com.main.prevoyancehrm.dto.ResponseDto.Candidates(
@@ -129,6 +143,17 @@ public interface UserRepo extends JpaRepository<User, String> {
                 AND u.isDelete=false
                 """)
         Optional<User> findById(@Param("id")String id);
+
+        @Query("""
+            SELECT new com.main.prevoyancehrm.dto.ResponseDto.UserResponse(
+                u.id, u.email, u.firstName, u.lastName, u.mobileNo, 
+                u.emgMobileNo, u.officialEmail, u.dob, u.adharNo, 
+                u.image, u.presentAddress, u.permanentAddress, u.role
+            )
+            FROM User u
+            WHERE u.id = :userId AND u.isDelete = false
+        """)
+        Optional<UserResponse> findUserDetailsById(@Param("userId") String userId);
 
         @Modifying
         @Transactional

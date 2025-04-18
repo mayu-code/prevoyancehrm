@@ -3,6 +3,7 @@ package com.main.prevoyancehrm.controller;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import org.apache.coyote.BadRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,6 +24,9 @@ import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.dto.RequestDto.CreatePasswordRequest;
 import com.main.prevoyancehrm.dto.RequestDto.LoginRequest;
 import com.main.prevoyancehrm.dto.RequestDto.RegisterRequest;
+import com.main.prevoyancehrm.dto.RequestDto.ResetPassword;
+import com.main.prevoyancehrm.dto.RequestDto.VarifyOpt;
+import com.main.prevoyancehrm.dto.ResponseDto.OtpResponse;
 import com.main.prevoyancehrm.dto.responseObjects.LoginResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.Sessions;
@@ -28,6 +34,7 @@ import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.exceptions.UnauthorizeException;
 import com.main.prevoyancehrm.jwtSecurity.JwtProvider;
 import com.main.prevoyancehrm.jwtSecurity.CustomUserDetail;
+import com.main.prevoyancehrm.service.serviceImpl.OtpServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SessionServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -46,6 +53,9 @@ public class AuthController {
 
    @Autowired
    private SessionServiceImpl sessionServiceImpl;
+
+   @Autowired
+   private OtpServiceImpl otpServiceImpl;
 
    @PostMapping("/register")
    public ResponseEntity<SuccessResponse> registerUser(@RequestBody RegisterRequest request)throws Exception{
@@ -164,5 +174,79 @@ public class AuthController {
             throw new UsernameNotFoundException("Invalid credentials ");
         }
         return new UsernamePasswordAuthenticationToken(details,password,details.getAuthorities());
+    }
+
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logOut(@RequestHeader("Authorization") String jwt) throws Exception {
+        try {
+            Sessions session = this.sessionServiceImpl.getSessionByToken(jwt.substring(7));
+            if (session == null) {
+                throw new EntityNotFoundException("session not found !");
+            }
+            session.setActive(false);
+            session.setLogoutAt(LocalDateTime.now());
+            session.setDelete(true);
+            session.setDeleteDate(LocalDateTime.now());
+            this.sessionServiceImpl.addSession(session);
+
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK, 200, "logout Successful ");
+            return ResponseEntity.of(Optional.of(response));
+
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/send-otp/{email}")
+    public ResponseEntity<?> sendOpt(@PathVariable("email") String email) throws Exception {
+        User user = this.userServiceImpl.getUserByEmail(email);
+        if (user == null) {
+            throw new EntityNotFoundException("user not found !");
+        }
+        try {
+            OtpResponse response = OtpResponse.builder()
+                    .status(HttpStatus.OK)
+                    .statusCode(200)
+                    .message("opt sended successfully")
+                    .opt(otpServiceImpl.sendOtp(email)).build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/verify-otp")
+    public ResponseEntity<?> varifyOtp(@RequestBody VarifyOpt request) throws Exception {
+        User user = this.userServiceImpl.getUserByEmail(request.getEmail());
+        if (user == null) {
+            throw new EntityNotFoundException("user not found !");
+        }
+        try {
+            if (!otpServiceImpl.varifyOtp(request.getEmail(), request.getOpt())) {
+                throw new BadRequestException("Invalid otp !");
+            }
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK, 200, "otp sended Successfully !");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("/password-reset")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPassword request) throws Exception {
+        User user = this.userServiceImpl.getUserByEmail(request.getEmail());
+        if (user == null) {
+            throw new EntityNotFoundException("user not found !");
+        }
+        try {
+            if (!otpServiceImpl.resetPassword(request.getEmail(), request.getOpt(), request.getPassword())) {
+                throw new BadRequestException("Invalid otp !");
+            }
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK, 200, "Password Reset Successfully !");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        } catch (Exception e) {
+            throw new Exception(e.getMessage());
+        }
     }
 }

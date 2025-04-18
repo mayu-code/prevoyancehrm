@@ -3,9 +3,44 @@ package com.main.prevoyancehrm.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import com.main.prevoyancehrm.dto.ResponseDto.BalaceLeavesResponse;
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 
+import jakarta.transaction.Transactional;
+
 public interface BalanceLeaveRepo extends JpaRepository<BalanceLeaves,Long>{
-   List<BalanceLeaves> findBalanceLeavesByUserId(String id);
+
+   @Query("""
+        SELECT new com.main.prevoyancehrm.dto.ResponseDto.BalaceLeavesResponse(
+            b.balanceLeaves, b.leavesTaken, l.name, l.maxAllowed, l.detail
+        )
+        FROM BalanceLeaves b
+        JOIN b.leaveType l
+        WHERE b.user.id = :userId AND b.isDelete = false AND l.isDelete=false
+    """)
+    List<BalaceLeavesResponse> findAllByUserId(@Param("userId") String userId);
+
+    @Query("""
+        SELECT new com.main.prevoyancehrm.dto.ResponseDto.BalaceLeavesResponse(
+            b.balanceLeaves, b.leavesTaken, l.name, l.maxAllowed, l.detail
+        )
+        FROM BalanceLeaves b
+        JOIN b.leaveType l
+        WHERE b.id = :balanceLeaveId AND b.isDelete = false
+    """)
+    BalaceLeavesResponse findByBalanceLeaveId(@Param("balanceLeaveId") Long balanceLeaveId);
+
+    @Modifying
+    @Transactional
+    @Query("""
+        UPDATE BalanceLeaves b
+        SET b.isDelete = true,
+            b.deleteAt = CURRENT_TIMESTAMP
+        WHERE b.user.id = :userId
+    """)
+    int softDeleteAllByUserId(@Param("userId") String userId);
 }
