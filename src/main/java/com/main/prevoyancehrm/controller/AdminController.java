@@ -192,15 +192,15 @@ public class AdminController {
         }
         try{
             
-            if(!user.getEmail().equals(request.getEmail())){
-                User user2 = this.userServiceImpl.getUserByEmail(request.getEmail());
-                if(user2!=null){
-                    response.setHttpStatus(HttpStatus.ALREADY_REPORTED);
-                    response.setMessage("Email Already Present !");
-                    response.setHttpStatusCode(208);
-                    return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
-                }
-            }
+            // if(!user.getEmail().equals(request.getEmail())){
+            //     User user2 = this.userServiceImpl.getUserByEmail(request.getEmail());
+            //     if(user2!=null){
+            //         response.setHttpStatus(HttpStatus.ALREADY_REPORTED);
+            //         response.setMessage("Email Already Present !");
+            //         response.setHttpStatusCode(208);
+            //         return ResponseEntity.status(HttpStatus.ALREADY_REPORTED).body(response);
+            //     }
+            // }
             user.setEmail(request.getEmail());
             user.setFirstName(request.getFirstName());
             user.setLastName(request.getLastName());
@@ -213,13 +213,14 @@ public class AdminController {
             user.setPresentAddress(request.getPresentAddress());
             user.setPermanentAddress(request.getPermanentAddress());
 
-            this.userServiceImpl.registerUser(user);
+            this.userServiceImpl.updateUser(user);
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("update personal detail successfully !");
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
+            e.printStackTrace();
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage(e.getMessage());
             response.setHttpStatusCode(500);
@@ -227,7 +228,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/updateBankDetail/{bankDetailId}")
+    @PutMapping("/updateBankDetail/{bankDetailId}")
     public ResponseEntity<SuccessResponse> updateBankDetail(@PathVariable("bankDetailId")long bankDetailId ,@RequestBody UpdateBankDetail request){
         SuccessResponse response = new SuccessResponse();
         BankDetails bankDetails = this.bankDetailServiceImpl.getBankDetailsById(bankDetailId);
@@ -259,7 +260,7 @@ public class AdminController {
         }
     }
 
-    @PostMapping("/updateProfessionalDetail/{professionalId}")
+    @PutMapping("/updateProfessionalDetail/{professionalId}")
     public ResponseEntity<SuccessResponse> updateProfessionalDetail(@PathVariable("professionalId")long professionalId,@RequestBody UpdateProfessionalDetail request){
         SuccessResponse response = new SuccessResponse();
         ProfessionalDetail detail = this.professionalDetailServiceImpl.getProfessionalDetailById(professionalId);
@@ -286,7 +287,7 @@ public class AdminController {
             salary.setUser(detail.getUser());
             
             this.professionalDetailServiceImpl.addProfessionalDetail(detail);
-            this.salaryServiceImpl.addSalary(salary);
+            // this.salaryServiceImpl.addSalary(salary);
             
             response.setHttpStatus(HttpStatus.OK);
             response.setMessage("update personal detail successfully !");
@@ -294,6 +295,7 @@ public class AdminController {
             return ResponseEntity.of(Optional.of(response));
 
         }catch(Exception e){
+            e.printStackTrace();
             response.setHttpStatus(HttpStatus.INTERNAL_SERVER_ERROR);
             response.setMessage(e.getMessage());
             response.setHttpStatusCode(500);
@@ -301,8 +303,7 @@ public class AdminController {
         }
     }
 
-
-    @PostMapping("/updateExperienceDetail/{experienceId}")
+    @PutMapping("/updateExperienceDetail/{experienceId}")
     public ResponseEntity<SuccessResponse> updateExperienceDetail(@PathVariable("experienceId")long experienceId,@RequestBody UpdateExperienceDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail detail = new ExperienceDetail();

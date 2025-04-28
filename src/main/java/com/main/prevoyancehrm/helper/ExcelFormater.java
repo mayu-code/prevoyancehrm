@@ -2,14 +2,20 @@ package com.main.prevoyancehrm.helper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DateUtil;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -131,172 +137,140 @@ public class ExcelFormater {
         return outputStream.toByteArray();
     }
 
-    public List<String> importCandidates(MultipartFile file) throws IOException {
-        Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
-        List<String> errorEmails = new ArrayList<>();
-
-        Iterator<Row> rowIterator = sheet.iterator();
-        if (rowIterator.hasNext()) {
-            rowIterator.next();
+    public void importCandidatesFromExcel(MultipartFile file) throws Exception {
+        if (file.isEmpty()) {
+            throw new Exception("File is empty. Please upload a valid Excel file.");
         }
-
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            User user = new User();
-            ProfessionalDetail professionalDetail = new ProfessionalDetail();
-            BankDetails bankDetails = new BankDetails();
-            Salary salary = new Salary();
-
-            User user2 = this.userServiceImpl.getUserByEmail(row.getCell(3).getStringCellValue());
-            if (user2 != null) {
-                continue;
+    
+        try {
+            List<List<Object>> candidateDataList = parseCandidateXlsx(file);
+            for (List<Object> data : candidateDataList) {
+                User user = null;
+                ProfessionalDetail professionalDetail = null;
+                BankDetails bankDetails = null;
+                Salary salary = null;
+    
+                for (Object obj : data) {
+                    if (obj instanceof User) {
+                        user = (User) obj;
+                    } else if (obj instanceof ProfessionalDetail) {
+                        professionalDetail = (ProfessionalDetail) obj;
+                    } else if (obj instanceof BankDetails) {
+                        bankDetails = (BankDetails) obj;
+                    } else if (obj instanceof Salary) {
+                        salary = (Salary) obj;
+                    }
+                }
+    
+                if (user != null && user.getEmail() != null && userServiceImpl.getUserByEmail(user.getEmail()) == null) {
+                    user = userServiceImpl.registerUser(user);
+    
+                    if (salary != null) {
+                        salary.setUser(user);
+                        salaryServiceImpl.addSalary(salary);
+                    }
+    
+                    if (bankDetails != null) {
+                        bankDetails.setUser(user);
+                        bankDetailsServiceImpl.addBankDetails(bankDetails);
+                    }
+    
+                    if (professionalDetail != null) {
+                        professionalDetail.setUser(user);
+                        professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
+                    }
+                }
             }
-
-            try {
-                user.setFirstName(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
-                user.setLastName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
-                user.setGender(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);
-                user.setEmail(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
-                user.setOfficialEmail(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
-                user.setMobileNo(
-                        row.getCell(5) != null ? String.valueOf((long) row.getCell(5).getNumericCellValue()) : null);
-                user.setEmgMobileNo(
-                        row.getCell(6) != null ? String.valueOf((long) row.getCell(6).getNumericCellValue()) : null);
-                user.setAdharNo(
-                        row.getCell(7) != null ? String.valueOf((long) row.getCell(7).getNumericCellValue()) : null);
-                user.setDob(row.getCell(8) != null ? row.getCell(8).getStringCellValue() : null);
-                user.setPresentAddress(row.getCell(9) != null ? row.getCell(9).getStringCellValue() : null);
-                user.setPermanentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
-
-                bankDetails.setBankName(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null);
-                bankDetails.setBankAccountNo(
-                        row.getCell(12) != null ? String.valueOf((long) row.getCell(12).getNumericCellValue()) : null);
-                bankDetails.setIfscCode(row.getCell(13) != null ? row.getCell(13).getStringCellValue() : null);
-                bankDetails.setPanNo(row.getCell(14) != null ? row.getCell(14).getStringCellValue() : null);
-                bankDetails.setUanNo(
-                        row.getCell(15) != null ? String.valueOf((long) row.getCell(15).getNumericCellValue()) : null);
-
-                professionalDetail
-                        .setTotalExperience(row.getCell(16) != null ? row.getCell(16).getStringCellValue() : null);
-                professionalDetail.setLocation(row.getCell(17) != null ? row.getCell(17).getStringCellValue() : null);
-                professionalDetail.setHireSource(row.getCell(18) != null ? row.getCell(18).getStringCellValue() : null);
-                professionalDetail.setPosition(row.getCell(19) != null ? row.getCell(19).getStringCellValue() : null);
-                professionalDetail.setDepartment(row.getCell(20) != null ? row.getCell(20).getStringCellValue() : null);
-                professionalDetail.setSkills(row.getCell(21) != null ? row.getCell(21).getStringCellValue() : null);
-                professionalDetail
-                        .setHighestQualification(row.getCell(22) != null ? row.getCell(22).getStringCellValue() : null);
-                professionalDetail
-                        .setJoiningDate(row.getCell(24) != null ? row.getCell(24).getStringCellValue() : null);
-                professionalDetail
-                        .setAdditionalInfo(row.getCell(25) != null ? row.getCell(25).getStringCellValue() : null);
-
-                double currentSalary = (double) row.getCell(23).getNumericCellValue();
-
-                user = this.userServiceImpl.registerUser(user);
-                salary.setGrossSalary(currentSalary);
-                salary.setUser(user);
-                this.salaryServiceImpl.addSalary(salary);
-                bankDetails.setUser(user);
-                this.bankDetailsServiceImpl.addBankDetails(bankDetails);
-
-                professionalDetail.setUser(user);
-                this.professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
-            } catch (Exception e) {
-                errorEmails.add(row.getCell(3).getStringCellValue());
-                continue;
-            }
+        } catch (Exception e) {
+            throw new Exception("Error while importing candidate data: " + e.getMessage(), e);
         }
-
-        workbook.close();
-        return errorEmails;
     }
+    
 
     public List<String> importEmployee(MultipartFile file) throws IOException {
-        Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
         List<String> errorEmails = new ArrayList<>();
-
-        Iterator<Row> rowIterator = sheet.iterator();
-        if (rowIterator.hasNext()) {
-            rowIterator.next();
-        }
-
-        while (rowIterator.hasNext()) {
-            Row row = rowIterator.next();
-            User user = new User();
-            ProfessionalDetail professionalDetail = new ProfessionalDetail();
-            BankDetails bankDetails = new BankDetails();
-            Salary salary = new Salary();
-
-            User user2 = this.userServiceImpl.getUserByEmail(row.getCell(3).getStringCellValue());
-            if (user2 != null) {
-                continue;
+        try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
+            Sheet sheet = workbook.getSheetAt(0);
+            Iterator<Row> rowIterator = sheet.iterator();
+    
+            if (!rowIterator.hasNext()) return errorEmails;
+            Row headerRow = rowIterator.next();
+    
+            // Map headers to column indices
+            Map<String, Integer> headerIndex = new HashMap<>();
+            for (Cell cell : headerRow) {
+                headerIndex.put(cell.getStringCellValue().trim(), cell.getColumnIndex());
             }
-
-            try {
-                user.setEmployeeId(row.getCell(0) != null ? row.getCell(0).getStringCellValue() : null);
-                user.setFirstName(row.getCell(1) != null ? row.getCell(1).getStringCellValue() : null);
-                user.setLastName(row.getCell(2) != null ? row.getCell(2).getStringCellValue() : null);
-                user.setGender(row.getCell(3) != null ? row.getCell(3).getStringCellValue() : null);
-                user.setEmail(row.getCell(4) != null ? row.getCell(4).getStringCellValue() : null);
-                user.setOfficialEmail(row.getCell(5) != null ? row.getCell(5).getStringCellValue() : null);
-                user.setMobileNo(
-                        row.getCell(6) != null ? String.valueOf((long) row.getCell(6).getNumericCellValue()) : null);
-                user.setEmgMobileNo(
-                        row.getCell(7) != null ? String.valueOf((long) row.getCell(7).getNumericCellValue()) : null);
-                user.setAdharNo(
-                        row.getCell(8) != null ? String.valueOf((long) row.getCell(8).getNumericCellValue()) : null);
-                user.setDob(row.getCell(9) != null ? row.getCell(9).getStringCellValue() : null);
-                user.setPresentAddress(row.getCell(10) != null ? row.getCell(10).getStringCellValue() : null);
-                user.setPermanentAddress(row.getCell(11) != null ? row.getCell(11).getStringCellValue() : null);
-
-                bankDetails.setBankName(row.getCell(12) != null ? row.getCell(12).getStringCellValue() : null);
-                bankDetails.setBankAccountNo(row.getCell(13) != null ?String.valueOf((long) row.getCell(13).getNumericCellValue()) : null);
-                bankDetails.setIfscCode(row.getCell(14) != null ? row.getCell(14).getStringCellValue() : null);
-                bankDetails.setPanNo(row.getCell(15) != null ? row.getCell(15).getStringCellValue() : null);
-                bankDetails.setUanNo(row.getCell(16) != null ? String.valueOf((long) row.getCell(16).getNumericCellValue()) : null);
-
-                professionalDetail
-                        .setTotalExperience(row.getCell(17) != null ? row.getCell(17).getStringCellValue() : null);
-                professionalDetail.setLocation(row.getCell(18) != null ? row.getCell(18).getStringCellValue() : null);
-                professionalDetail.setHireSource(row.getCell(19) != null ? row.getCell(19).getStringCellValue() : null);
-                professionalDetail.setPosition(row.getCell(20) != null ? row.getCell(20).getStringCellValue() : null);
-                professionalDetail.setDepartment(row.getCell(21) != null ? row.getCell(21).getStringCellValue() : null);
-                professionalDetail.setSkills(row.getCell(22) != null ? row.getCell(22).getStringCellValue() : null);
-                professionalDetail
-                        .setHighestQualification(row.getCell(23) != null ? row.getCell(23).getStringCellValue() : null);
-
-                professionalDetail
-                        .setJoiningDate(row.getCell(25) != null ? row.getCell(25).getStringCellValue() : null);
-                professionalDetail
-                        .setAdditionalInfo(row.getCell(26) != null ? row.getCell(26).getStringCellValue() : null);
-                        
-
-                user = this.userServiceImpl.registerUser(user);
-                if(row.getCell(24)!=null){
-                    double currentSalary = (double) row.getCell(24).getNumericCellValue();
-                    salary.setGrossSalary(currentSalary);
-                    salary.setUser(user);
-                    this.salaryServiceImpl.addSalary(salary);
+    
+            while (rowIterator.hasNext()) {
+                Row row = rowIterator.next();
+    
+                try {
+                    String email = getCellValue(row.getCell(headerIndex.get("email")));
+                    if (userServiceImpl.getUserByEmail(email) != null) {
+                        continue;
+                    }
+    
+                    User user = new User();
+                    user.setEmployeeId(getCellValue(row.getCell(headerIndex.get("employeeId"))));
+                    user.setFirstName(getCellValue(row.getCell(headerIndex.get("firstName"))));
+                    user.setLastName(getCellValue(row.getCell(headerIndex.get("lastName"))));
+                    user.setGender(getCellValue(row.getCell(headerIndex.get("gender"))));
+                    user.setEmail(email);
+                    user.setOfficialEmail(getCellValue(row.getCell(headerIndex.get("officialEmail"))));
+                    user.setMobileNo(getCellValue(row.getCell(headerIndex.get("mobileNo"))));
+                    user.setEmgMobileNo(getCellValue(row.getCell(headerIndex.get("emgMobileNo"))));
+                    user.setAdharNo(getCellValue(row.getCell(headerIndex.get("adharNo"))));
+                    user.setDob(getCellValue(row.getCell(headerIndex.get("dob"))));
+                    user.setPresentAddress(getCellValue(row.getCell(headerIndex.get("presentAddress"))));
+                    user.setPermanentAddress(getCellValue(row.getCell(headerIndex.get("permanentAddress"))));
+    
+                    BankDetails bankDetails = new BankDetails();
+                    bankDetails.setBankName(getCellValue(row.getCell(headerIndex.get("bankName"))));
+                    bankDetails.setBankAccountNo(getCellValue(row.getCell(headerIndex.get("bankAccountNo"))));
+                    bankDetails.setIfscCode(getCellValue(row.getCell(headerIndex.get("ifscCode"))));
+                    bankDetails.setPanNo(getCellValue(row.getCell(headerIndex.get("panNo"))));
+                    bankDetails.setUanNo(getCellValue(row.getCell(headerIndex.get("uanNo"))));
+    
+                    ProfessionalDetail professionalDetail = new ProfessionalDetail();
+                    professionalDetail.setTotalExperience(getCellValue(row.getCell(headerIndex.get("totalExperience"))));
+                    professionalDetail.setLocation(getCellValue(row.getCell(headerIndex.get("location"))));
+                    professionalDetail.setHireSource(getCellValue(row.getCell(headerIndex.get("hireSource"))));
+                    professionalDetail.setPosition(getCellValue(row.getCell(headerIndex.get("position"))));
+                    professionalDetail.setDepartment(getCellValue(row.getCell(headerIndex.get("department"))));
+                    professionalDetail.setSkills(getCellValue(row.getCell(headerIndex.get("skills"))));
+                    professionalDetail.setHighestQualification(getCellValue(row.getCell(headerIndex.get("highestQualification"))));
+                    professionalDetail.setJoiningDate(getCellValue(row.getCell(headerIndex.get("joiningDate"))));
+                    professionalDetail.setAdditionalInfo(getCellValue(row.getCell(headerIndex.get("additionalInfo"))));
+    
+                    user = userServiceImpl.registerUser(user);
+    
+                    // Optional salary
+                    if (headerIndex.get("grossSalary") != null) {
+                        Cell salaryCell = row.getCell(headerIndex.get("grossSalary"));
+                        if (salaryCell != null && salaryCell.getCellType() == CellType.NUMERIC) {
+                            Salary salary = new Salary();
+                            salary.setGrossSalary(salaryCell.getNumericCellValue());
+                            salary.setUser(user);
+                            salaryServiceImpl.addSalary(salary);
+                        }
+                    }
+    
+                    bankDetails.setUser(user);
+                    bankDetailsServiceImpl.addBankDetails(bankDetails);
+    
+                    professionalDetail.setUser(user);
+                    professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
+    
+                } catch (Exception e) {
+                    errorEmails.add(getCellValue(row.getCell(headerIndex.get("email"))));
+                    // optionally log e.printStackTrace();
                 }
-        
-                bankDetails.setUser(user);
-                this.bankDetailsServiceImpl.addBankDetails(bankDetails);
-
-                professionalDetail.setUser(user);
-                this.professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
-
-            } catch (Exception e) {
-                errorEmails.add(row.getCell(4).getStringCellValue());
-                continue;
             }
         }
-
-        workbook.close();
         return errorEmails;
-
     }
+    
 
     public byte[] emptyEmployeeSheet() throws IOException {
         Workbook workbook = new XSSFWorkbook();
@@ -413,4 +387,114 @@ public class ExcelFormater {
 
         return outputStream.toByteArray();
     }
+
+    private List<List<Object>> parseCandidateXlsx(MultipartFile file) throws Exception {
+    List<List<Object>> candidates = new ArrayList<>();
+
+    try (InputStream inputStream = file.getInputStream(); Workbook workbook = WorkbookFactory.create(inputStream)) {
+        Sheet sheet = workbook.getSheetAt(0);
+        Iterator<Row> rowIterator = sheet.iterator();
+
+        if (!rowIterator.hasNext()) return candidates;
+        Row headerRow = rowIterator.next();
+
+        // Map headers to their indexes
+        Map<String, Integer> indexMap = new HashMap<>();
+        String[] headers = {
+            "firstName", "lastName", "gender", "email", "officialEmail", "mobileNo", "emgMobileNo",
+            "adharNo", "dob", "presentAddress", "permanentAddress",
+            "bankName", "bankAccountNo", "ifscCode", "panNo", "uanNo",
+            "totalExperience", "location", "hireSource", "position", "department", "skills", "highestQualification",
+            "grossSalary", "joiningDate", "additionalInfo"
+        };
+
+        for (String header : headers) {
+            int idx = getColumnIndex(headerRow, header);
+            if (idx == -1) throw new RuntimeException("Missing column: " + header);
+            indexMap.put(header, idx);
+        }
+
+        while (rowIterator.hasNext()) {
+            Row row = rowIterator.next();
+            List<Object> objects = new ArrayList<>();
+
+            User user = new User();
+            user.setFirstName(getCellValue(row.getCell(indexMap.get("firstName"))));
+            user.setLastName(getCellValue(row.getCell(indexMap.get("lastName"))));
+            user.setGender(getCellValue(row.getCell(indexMap.get("gender"))));
+            user.setEmail(getCellValue(row.getCell(indexMap.get("email"))));
+            user.setOfficialEmail(getCellValue(row.getCell(indexMap.get("officialEmail"))));
+            user.setMobileNo(getCellValue(row.getCell(indexMap.get("mobileNo"))));
+            user.setEmgMobileNo(getCellValue(row.getCell(indexMap.get("emgMobileNo"))));
+            user.setAdharNo(getCellValue(row.getCell(indexMap.get("adharNo"))));
+            user.setDob(getCellValue(row.getCell(indexMap.get("dob"))));
+            user.setPresentAddress(getCellValue(row.getCell(indexMap.get("presentAddress"))));
+            user.setPermanentAddress(getCellValue(row.getCell(indexMap.get("permanentAddress"))));
+
+            BankDetails bankDetails = new BankDetails();
+            bankDetails.setBankName(getCellValue(row.getCell(indexMap.get("bankName"))));
+            bankDetails.setBankAccountNo(getCellValue(row.getCell(indexMap.get("bankAccountNo"))));
+            bankDetails.setIfscCode(getCellValue(row.getCell(indexMap.get("ifscCode"))));
+            bankDetails.setPanNo(getCellValue(row.getCell(indexMap.get("panNo"))));
+            bankDetails.setUanNo(getCellValue(row.getCell(indexMap.get("uanNo"))));
+
+            ProfessionalDetail professionalDetail = new ProfessionalDetail();
+            professionalDetail.setTotalExperience(getCellValue(row.getCell(indexMap.get("totalExperience"))));
+            professionalDetail.setLocation(getCellValue(row.getCell(indexMap.get("location"))));
+            professionalDetail.setHireSource(getCellValue(row.getCell(indexMap.get("hireSource"))));
+            professionalDetail.setPosition(getCellValue(row.getCell(indexMap.get("position"))));
+            professionalDetail.setDepartment(getCellValue(row.getCell(indexMap.get("department"))));
+            professionalDetail.setSkills(getCellValue(row.getCell(indexMap.get("skills"))));
+            professionalDetail.setHighestQualification(getCellValue(row.getCell(indexMap.get("highestQualification"))));
+            professionalDetail.setJoiningDate(getCellValue(row.getCell(indexMap.get("joiningDate"))));
+            professionalDetail.setAdditionalInfo(getCellValue(row.getCell(indexMap.get("additionalInfo"))));
+
+            Salary salary = new Salary();
+            salary.setGrossSalary(safeParseDouble(getCellValue(row.getCell(indexMap.get("grossSalary")))));
+
+            objects.add(user);
+            objects.add(professionalDetail);
+            objects.add(bankDetails);
+            objects.add(salary);
+
+            candidates.add(objects);
+        }
+    }
+
+    return candidates;
+        }
+
+        
+        private int getColumnIndex(Row headerRow, String columnName) {
+                for (Cell cell : headerRow) {
+                    if (cell.getStringCellValue().trim().equalsIgnoreCase(columnName.trim())) {
+                        return cell.getColumnIndex();
+                    }
+                }
+                return -1;
+            }
+        private String getCellValue(Cell cell) {
+    if (cell == null) return "";
+    switch (cell.getCellType()) {
+        case STRING: return cell.getStringCellValue();
+        case NUMERIC:
+            if (DateUtil.isCellDateFormatted(cell)) {
+                return cell.getLocalDateTimeCellValue().toLocalDate().toString();
+            }
+            return String.valueOf((long) cell.getNumericCellValue());
+        case BOOLEAN: return String.valueOf(cell.getBooleanCellValue());
+        default: return "";
+    }
+}
+
+private Double safeParseDouble(String value) {
+    try {
+        return Double.parseDouble(value);
+    } catch (Exception e) {
+        return 0.0;
+    }
+}
+
+            
+
 }

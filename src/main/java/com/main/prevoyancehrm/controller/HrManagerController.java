@@ -180,23 +180,15 @@ public class HrManagerController {
     }
 
     @PostMapping("/importCandidates")
-    public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file) throws Exception{
+    public ResponseEntity<SuccessResponse> importCandidates(@RequestParam("file")MultipartFile file) throws Exception{
         SuccessResponse response = new SuccessResponse();
-        List<String> errorEmails = new ArrayList<>();
+        System.out.println(file.getName());
         try{
-            errorEmails= this.excelFormater.importCandidates(file);
-            if(errorEmails.isEmpty()){
-                response.setHttpStatus(HttpStatus.OK);
-                response.setHttpStatusCode(200);
-                response.setMessage("Candidates Added Successfully ! ");
-                return ResponseEntity.of(Optional.of(response));
-            }else{
-                response.setHttpStatus(HttpStatus.OK);
-                response.setHttpStatusCode(200);
-                response.setMessage(errorEmails.toString()+"this users information is not fomated , rest are added successfully");
-                return ResponseEntity.of(Optional.of(response));
-            }
-            
+            this.excelFormater.importCandidatesFromExcel(file);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setHttpStatusCode(200);
+            response.setMessage("Candidates Added Successfully ! ");
+            return ResponseEntity.of(Optional.of(response));
         }catch(Exception e){
             throw new Exception(e.getMessage());
         }
@@ -229,7 +221,6 @@ public class HrManagerController {
             byte[] excelBytes = this.excelFormater.emptyCandidateSheet();
 
             ByteArrayResource resource = new ByteArrayResource(excelBytes);
-
                     return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=students.xlsx")
                     .header(HttpHeaders.CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
