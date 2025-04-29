@@ -6,10 +6,6 @@ import lombok.Data;
 
 @Data
 public class AddNewEducation {
-
-    @Positive(message = "User ID must be a positive number")
-    private String userId;
-
     @NotBlank(message = "Degree cannot be blank")
     private String degree;
 

@@ -28,24 +28,29 @@ import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 @CrossOrigin
 public class UserHandlerController {
     
-    @Autowired
-    private UserServiceImpl userServiceImpl;
+    private final UserServiceImpl userServiceImpl;
+    private final BalanceLeaveServiceImpl balanceLeaveServiceImpl;
+    private final ProfessionalDetailServiceImpl professionalDetailServiceImpl;
+    private final EducationDetailServiceImpl educationDetailServiceImpl;
+    private final ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
+    private final BankDetailServiceImpl bankDetailServiceImpl;
 
     @Autowired
-    private BalanceLeaveServiceImpl balanceLeaveServiceImpl;
-
-    
-    @Autowired
-    private ProfessionalDetailServiceImpl professionalDetailServiceImpl;
-
-    @Autowired
-    private EducationDetailServiceImpl educationDetailServiceImpl;
-
-    @Autowired
-    private ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
-
-    @Autowired
-    private BankDetailServiceImpl bankDetailServiceImpl;
+    public UserHandlerController(
+        UserServiceImpl userServiceImpl,
+        BalanceLeaveServiceImpl balanceLeaveServiceImpl,
+        ProfessionalDetailServiceImpl professionalDetailServiceImpl,
+        EducationDetailServiceImpl educationDetailServiceImpl,
+        ExperienceDetailsServiceImpl experienceDetailsServiceImpl,
+        BankDetailServiceImpl bankDetailServiceImpl
+    ) {
+        this.userServiceImpl = userServiceImpl;
+        this.balanceLeaveServiceImpl = balanceLeaveServiceImpl;
+        this.professionalDetailServiceImpl = professionalDetailServiceImpl;
+        this.educationDetailServiceImpl = educationDetailServiceImpl;
+        this.experienceDetailsServiceImpl = experienceDetailsServiceImpl;
+        this.bankDetailServiceImpl = bankDetailServiceImpl;
+    }
 
     @GetMapping("/getProfile")
     public ResponseEntity<DataResponse> getProfile(@RequestHeader("Authorization")String jwt){

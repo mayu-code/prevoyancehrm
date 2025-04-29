@@ -139,9 +139,9 @@ public class AuthController {
         if(user==null){
             throw new EntityNotFoundException("invalid username or password");
         }
-        if(user.getRole().equals(Role.EMPLOYEE)){
-            throw new EntityNotFoundException("Your Are Not Aproved Yet as an HR Please contact Super Admin");
-        }
+        // if(user.getRole().equals(Role.EMPLOYEE)){
+        //     throw new EntityNotFoundException("Your Are Not Aproved Yet as an HR Please contact Super Admin");
+        // }
         UserDetails userDetails = customUserDetail.loadUserByUsername(request.getEmail());
         boolean isPasswordValid = new BCryptPasswordEncoder().matches(request.getPassword(),userDetails.getPassword() );
 

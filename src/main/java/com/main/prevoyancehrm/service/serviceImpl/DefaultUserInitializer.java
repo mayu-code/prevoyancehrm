@@ -23,6 +23,8 @@ public class DefaultUserInitializer implements CommandLineRunner{
             User user = new User();
             user.setId(UUID.randomUUID().toString());
             user.setRole(Role.SUPERADMIN);
+            user.setActive(true);
+            user.setApproved(true);
             user.setEmail("durbulemayur9265@gmail.com");
             user.setPassword(new BCryptPasswordEncoder().encode("Mayur@123"));
             user.setActive(true);

@@ -76,7 +76,7 @@ public class EmployeeController {
     }
 
     @PostMapping("/addNewExperience/{userId}")
-    public ResponseEntity<SuccessResponse> addExperienceDetail(@PathVariable("userId")String userId,@Valid @RequestBody ExperienceDetail request){
+    public ResponseEntity<SuccessResponse> addExperienceDetail(@PathVariable("userId")String userId,@Valid @RequestBody UpdateExperienceDetail request){
         SuccessResponse response = new SuccessResponse();
         ExperienceDetail experienceDetail = new ExperienceDetail();
         User user=new User();
@@ -199,12 +199,12 @@ public class EmployeeController {
         }
     }
 
-    @PostMapping("/addNewEducation")
-    public ResponseEntity<?> addNewEducation(@Valid @RequestBody AddNewEducation request)throws Exception{
+    @PostMapping("/addNewEducation/{userId}")
+    public ResponseEntity<?> addNewEducation(@PathVariable("userId")String userId,@Valid @RequestBody AddNewEducation request)throws Exception{
         EducationDetail educationDetail = new EducationDetail();
-        User user = this.userServiceImpl.getUserById(request.getUserId());
+        User user = this.userServiceImpl.getUserById(userId);
         try{
-
+            System.out.println("ok*************");
             educationDetail.setCollege(request.getCollege());
             educationDetail.setDegree(request.getDegree());
             educationDetail.setField(request.getField());

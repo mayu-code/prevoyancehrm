@@ -180,9 +180,8 @@ public class HrManagerController {
     }
 
     @PostMapping("/importCandidates")
-    public ResponseEntity<SuccessResponse> importCandidates(@RequestParam("file")MultipartFile file) throws Exception{
+    public ResponseEntity<SuccessResponse> importCandidates(@RequestPart("file")MultipartFile file) throws Exception{
         SuccessResponse response = new SuccessResponse();
-        System.out.println(file.getName());
         try{
             this.excelFormater.importCandidatesFromExcel(file);
             response.setHttpStatus(HttpStatus.OK);
@@ -193,6 +192,7 @@ public class HrManagerController {
             throw new Exception(e.getMessage());
         }
     }
+    
     @PostMapping("/importEmployees")
     public ResponseEntity<SuccessResponse> importEmployees(@RequestPart("file")MultipartFile file) throws Exception{
         SuccessResponse response = new SuccessResponse();

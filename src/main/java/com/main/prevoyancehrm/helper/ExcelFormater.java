@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.main.prevoyancehrm.constants.Role;
 import com.main.prevoyancehrm.entities.BankDetails;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.Salary;
@@ -29,6 +31,7 @@ import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
+import com.main.prevoyancehrm.service.serviceLogic.EmployeeDefaultAssignElements;
 
 @Service
 public class ExcelFormater {
@@ -45,11 +48,13 @@ public class ExcelFormater {
     @Autowired
     private SalaryServiceImpl salaryServiceImpl;
 
+    @Autowired
+    private EmployeeDefaultAssignElements assignElements;
+
     public byte[] exportEmployee(List<User> users) throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Users");
 
-        // // Header Row
         Row headerRow = sheet.createRow(0);
         String[] headers = { "Employee id", "First Name", "Last Name", "Email", "Official Email", "Mobile No",
                 "Emergency Mobile No",
@@ -189,6 +194,7 @@ public class ExcelFormater {
 
     public List<String> importEmployee(MultipartFile file) throws IOException {
         List<String> errorEmails = new ArrayList<>();
+        
         try (Workbook workbook = new XSSFWorkbook(file.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             Iterator<Row> rowIterator = sheet.iterator();
@@ -197,14 +203,24 @@ public class ExcelFormater {
             Row headerRow = rowIterator.next();
     
             // Map headers to column indices
+            String[] headers = {
+                "email", "firstName", "lastName", "gender", "officialEmail", "mobileNo",
+                "emgMobileNo", "adharNo", "dob", "presentAddress", "permanentAddress",
+                "bankName", "bankAccountNo", "ifscCode", "panNo", "uanNo", "totalExperience",
+                "location", "hireSource", "position", "department", "skills", "highestQualification",
+                "joiningDate", "additionalInfo", "grossSalary"
+            };
+            
             Map<String, Integer> headerIndex = new HashMap<>();
-            for (Cell cell : headerRow) {
-                headerIndex.put(cell.getStringCellValue().trim(), cell.getColumnIndex());
+            for (int i = 0; i < headers.length; i++) {
+                int idx = getColumnIndex(headerRow, headers[i]);
+                if (idx != -1) {
+                    headerIndex.put(headers[i], idx);
+                }
             }
     
             while (rowIterator.hasNext()) {
                 Row row = rowIterator.next();
-    
                 try {
                     String email = getCellValue(row.getCell(headerIndex.get("email")));
                     if (userServiceImpl.getUserByEmail(email) != null) {
@@ -212,7 +228,6 @@ public class ExcelFormater {
                     }
     
                     User user = new User();
-                    user.setEmployeeId(getCellValue(row.getCell(headerIndex.get("employeeId"))));
                     user.setFirstName(getCellValue(row.getCell(headerIndex.get("firstName"))));
                     user.setLastName(getCellValue(row.getCell(headerIndex.get("lastName"))));
                     user.setGender(getCellValue(row.getCell(headerIndex.get("gender"))));
@@ -225,6 +240,7 @@ public class ExcelFormater {
                     user.setPresentAddress(getCellValue(row.getCell(headerIndex.get("presentAddress"))));
                     user.setPermanentAddress(getCellValue(row.getCell(headerIndex.get("permanentAddress"))));
     
+                    // Create and populate BankDetails entity
                     BankDetails bankDetails = new BankDetails();
                     bankDetails.setBankName(getCellValue(row.getCell(headerIndex.get("bankName"))));
                     bankDetails.setBankAccountNo(getCellValue(row.getCell(headerIndex.get("bankAccountNo"))));
@@ -232,6 +248,7 @@ public class ExcelFormater {
                     bankDetails.setPanNo(getCellValue(row.getCell(headerIndex.get("panNo"))));
                     bankDetails.setUanNo(getCellValue(row.getCell(headerIndex.get("uanNo"))));
     
+                    // Create and populate ProfessionalDetail entity
                     ProfessionalDetail professionalDetail = new ProfessionalDetail();
                     professionalDetail.setTotalExperience(getCellValue(row.getCell(headerIndex.get("totalExperience"))));
                     professionalDetail.setLocation(getCellValue(row.getCell(headerIndex.get("location"))));
@@ -243,10 +260,15 @@ public class ExcelFormater {
                     professionalDetail.setJoiningDate(getCellValue(row.getCell(headerIndex.get("joiningDate"))));
                     professionalDetail.setAdditionalInfo(getCellValue(row.getCell(headerIndex.get("additionalInfo"))));
     
+                    user.setActive(true);
+                    user.setDelete(false);
+                    user.setApproved(true);
+                    user.setRole(Role.EMPLOYEE);
                     user = userServiceImpl.registerUser(user);
-    
+                    User user2 = user;
+                    CompletableFuture.runAsync(()->this.assignElements.assignAllLeaveTypes(user2.getId()));
                     // Optional salary
-                    if (headerIndex.get("grossSalary") != null) {
+                    if (headerIndex.containsKey("grossSalary")) {
                         Cell salaryCell = row.getCell(headerIndex.get("grossSalary"));
                         if (salaryCell != null && salaryCell.getCellType() == CellType.NUMERIC) {
                             Salary salary = new Salary();
@@ -256,58 +278,64 @@ public class ExcelFormater {
                         }
                     }
     
+                    // Save bank details
                     bankDetails.setUser(user);
                     bankDetailsServiceImpl.addBankDetails(bankDetails);
     
+                    // Save professional details
                     professionalDetail.setUser(user);
                     professionalDetailServiceImpl.addProfessionalDetail(professionalDetail);
     
                 } catch (Exception e) {
-                    errorEmails.add(getCellValue(row.getCell(headerIndex.get("email"))));
-                    // optionally log e.printStackTrace();
+                    String email = getCellValue(row.getCell(headerIndex.get("email")));
+                    errorEmails.add(email);
+                    // Optionally log the error (e.printStackTrace()) for more detailed diagnostics
                 }
             }
         }
         return errorEmails;
     }
     
+    
 
     public byte[] emptyEmployeeSheet() throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Users");
 
-        // // Header Row
+        // Header Row
         Row headerRow = sheet.createRow(0);
-        String[] headers = { "Employee Id", "First Name", "Last Name", "Gender", "Email", "Official Email", "Mobile No",
-                "Emergency Mobile No",
-                "Adhar No", "dob", "Present Address", "Permanent Address", "Bank Name", "Account No", "IFSC Code",
-                "Pan No", "UAN No",
-                "Total Experience", "Location", "Source of hire", "Position", "Department",
-                "Skills", "Highest Qualification", "Current Salary", "Joining Date", "Adition info" };
+        String[] headers = {
+            "email", "firstName", "lastName", "gender", "officialEmail", "mobileNo",
+            "emgMobileNo", "adharNo", "dob", "presentAddress", "permanentAddress",
+            "bankName", "bankAccountNo", "ifscCode", "panNo", "uanNo", "totalExperience",
+            "location", "hireSource", "position", "department", "skills", "highestQualification",
+            "joiningDate", "additionalInfo", "grossSalary"
+        };
 
+        // Adding headers to the first row
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
         }
 
+        // Adding a row with dummy data
         Row row = sheet.createRow(1);
-        row.createCell(0).setCellValue("ABC123");
-        row.createCell(0).setCellValue("John");
-        row.createCell(1).setCellValue("Doe");
-        row.createCell(2).setCellValue("Male");
-        row.createCell(3).setCellValue("john.doe@example.com");
+        row.createCell(0).setCellValue("john.doe@example.com");
+        row.createCell(1).setCellValue("John");
+        row.createCell(2).setCellValue("Doe");
+        row.createCell(3).setCellValue("Male");
         row.createCell(4).setCellValue("john.doe@company.com");
-        row.createCell(5).setCellValue(1234567890);
-        row.createCell(6).setCellValue(987654321);
-        row.createCell(7).setCellValue(12345677792l);
+        row.createCell(5).setCellValue("1234567890");
+        row.createCell(6).setCellValue("9876543210");
+        row.createCell(7).setCellValue("123456789012");
         row.createCell(8).setCellValue("1990-01-15");
         row.createCell(9).setCellValue("123 Main St, New York");
         row.createCell(10).setCellValue("456 Elm St, Los Angeles");
         row.createCell(11).setCellValue("ABC Bank");
-        row.createCell(12).setCellValue(9876543210l);
+        row.createCell(12).setCellValue("1234567890123456");
         row.createCell(13).setCellValue("IFSC0001234");
         row.createCell(14).setCellValue("ABCDE1234F");
-        row.createCell(15).setCellValue(123456789012l);
+        row.createCell(15).setCellValue("123456789012");
         row.createCell(16).setCellValue("5 Years");
         row.createCell(17).setCellValue("New York");
         row.createCell(18).setCellValue("LinkedIn");
@@ -315,14 +343,16 @@ public class ExcelFormater {
         row.createCell(20).setCellValue("IT Department");
         row.createCell(21).setCellValue("Java, Spring Boot, React");
         row.createCell(22).setCellValue("Master's in Computer Science");
-        row.createCell(23).setCellValue(80000);
+        row.createCell(23).setCellValue(75000);
         row.createCell(24).setCellValue("2023-06-15");
         row.createCell(25).setCellValue("Top performer in Java Development");
 
+        // Auto-size columns for better visibility
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
 
+        // Write the workbook to byte array output stream
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
@@ -333,23 +363,24 @@ public class ExcelFormater {
     public byte[] emptyCandidateSheet() throws IOException {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Users");
-
-        // // Header Row
+    
+        // Header Row
         Row headerRow = sheet.createRow(0);
-        String[] headers = { "First Name", "Last Name", "Gender", "Email", "Official Email", "Mobile No",
-                "Emergency Mobile No",
-                "Adhar No", "dob", "Present Address", "Permanent Address", "Bank Name", "Account No", "IFSC Code",
-                "Pan No", "UAN No",
-                "Total Experience", "Location", "Source of hire", "Position", "Department",
-                "Skills", "Highest Qualification", "Current Salary", "Joining Date", "Adition info" };
-
+        String[] headers = {
+            "firstName", "lastName", "gender", "email", "officialEmail", "mobileNo", "emgMobileNo",
+            "adharNo", "dob", "presentAddress", "permanentAddress",
+            "bankName", "bankAccountNo", "ifscCode", "panNo", "uanNo",
+            "totalExperience", "location", "hireSource", "position", "department", "skills", "highestQualification",
+            "grossSalary", "joiningDate", "additionalInfo"
+        };
+    
         for (int i = 0; i < headers.length; i++) {
             Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
         }
-
+    
+        // Dummy Data Row
         Row row = sheet.createRow(1);
-
         row.createCell(0).setCellValue("John");
         row.createCell(1).setCellValue("Doe");
         row.createCell(2).setCellValue("Male");
@@ -376,17 +407,19 @@ public class ExcelFormater {
         row.createCell(23).setCellValue(80000);
         row.createCell(24).setCellValue("2023-06-15");
         row.createCell(25).setCellValue("Top performer in Java Development");
-
+    
+        // Auto-size the columns to fit the headers
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
-
+    
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         workbook.write(outputStream);
         workbook.close();
-
+    
         return outputStream.toByteArray();
     }
+    
 
     private List<List<Object>> parseCandidateXlsx(MultipartFile file) throws Exception {
     List<List<Object>> candidates = new ArrayList<>();
