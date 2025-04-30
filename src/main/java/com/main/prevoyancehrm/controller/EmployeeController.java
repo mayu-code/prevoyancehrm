@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -169,12 +170,12 @@ public class EmployeeController {
     }
 
 
-    @PostMapping("/updateEducationDetail")
-    public ResponseEntity<SuccessResponse> updateEducationDetail(@Valid @RequestBody UpdateEducationDetail request) throws Exception{
+    @PutMapping("/updateEducationDetail/{id}")
+    public ResponseEntity<SuccessResponse> updateEducationDetail(@PathVariable("id")Long id,@Valid @RequestBody UpdateEducationDetail request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         EducationDetail detail = new EducationDetail();
-        if(request.getId()!=0){
-            detail = this.educationDetailServiceImpl.getEducationDetailById(request.getId());
+        if(id!=0){
+            detail = this.educationDetailServiceImpl.getEducationDetailById(id);
             detail.setDegree(request.getDegree());
             detail.setCollege(request.getCollege());
             detail.setField(request.getField());

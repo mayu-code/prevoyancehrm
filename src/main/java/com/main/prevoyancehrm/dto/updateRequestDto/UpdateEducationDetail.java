@@ -4,7 +4,6 @@ import lombok.Data;
 
 @Data
 public class UpdateEducationDetail {
-    private long id;
     private String degree;
     private String college;
     private String field;
