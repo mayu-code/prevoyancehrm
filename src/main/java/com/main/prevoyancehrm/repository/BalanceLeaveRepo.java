@@ -34,6 +34,22 @@ public interface BalanceLeaveRepo extends JpaRepository<BalanceLeaves,Long>{
     """)
     BalaceLeavesResponse findByBalanceLeaveId(@Param("balanceLeaveId") Long balanceLeaveId);
 
+    
+        @Query("""
+            SELECT b
+            FROM BalanceLeaves b
+            JOIN b.user u
+            JOIN b.leaveType l
+            WHERE b.id = :balanceLeaveId
+            AND u.id = :userId
+            AND b.isDelete = false
+        """)
+        BalanceLeaves findByBalanceLeaveIdAndEmpId(
+            @Param("balanceLeaveId") Long balanceLeaveId,
+            @Param("userId") String userId
+                                            );
+
+
     @Modifying
     @Transactional
     @Query("""

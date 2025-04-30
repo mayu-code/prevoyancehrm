@@ -47,10 +47,12 @@ public class SecurityConfig {
         http
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/hrExecutive/**","/user/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE")
+                .requestMatchers("/hrExecutive/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE")
                 .requestMatchers("/hrManager/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER")
                 .requestMatchers("/admin/**").hasAnyRole("SUPERADMIN", "ADMIN")
                 .requestMatchers("/superAdmin/**").hasRole("SUPERADMIN")
+                .requestMatchers("/user/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE", "EMPLOYEE")
+                .requestMatchers("/employee/**").hasAnyRole("SUPERADMIN", "ADMIN", "HRMANAGER", "HREXECUTIVE", "EMPLOYEE")
                 .requestMatchers("/auth/**","swagger-ui/**","v3/**").permitAll()
                 .anyRequest().authenticated())
             .csrf(csrf -> csrf.disable())

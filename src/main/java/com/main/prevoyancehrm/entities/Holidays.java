@@ -17,6 +17,7 @@ public class Holidays {
     private long id;
     private LocalDate date;
     private String name;
+    private String description;
 
 
     private boolean isDelete=false;

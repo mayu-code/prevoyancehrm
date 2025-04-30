@@ -1,6 +1,14 @@
 package com.main.prevoyancehrm.helper;
 
+import org.springframework.beans.factory.annotation.Value;
+
+import com.main.prevoyancehrm.jwtSecurity.JwtConstant;
+
 public class EmailFormater1 {
+
+
+    @Value("${app.cors.allowed-origins}")
+    private String[] allowedOrigins;
 
     public static String generateWelcomeEmail(String email, String name, String position, String mobileNo) {
         StringBuilder emailContent = new StringBuilder();
@@ -23,7 +31,9 @@ public class EmailFormater1 {
                     .append("You can now log in to the website to create your password by clicking the link below:")
                     .append("</p>")
                     .append("<p>")
-                    .append("<a href=\"http://localhost:5173/createPassword?email=")
+                    .append("<a href=\"")
+                    .append(JwtConstant.getAllowedOrigin())
+                    .append("auth/create-password/")
                     .append(email)
                     .append("\">Set Your Password</a>")
                     .append("</p>")

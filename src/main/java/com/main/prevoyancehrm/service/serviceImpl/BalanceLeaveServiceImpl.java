@@ -27,5 +27,9 @@ public class BalanceLeaveServiceImpl implements BalanceLeavesService{
     public List<BalaceLeavesResponse> getAllBalanceLeaves(String id) {
         return this.balaceLeavesRepo.findAllByUserId(id);
     }
+    @Override
+    public BalanceLeaves getBalanceLeaveByIdAndEmpId(Long balanceLeaveId, String userId) {
+        return this.balaceLeavesRepo.findByBalanceLeaveIdAndEmpId(balanceLeaveId, userId);
+    }
     
 }

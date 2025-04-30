@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
+import javax.xml.crypto.Data;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
@@ -22,18 +24,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.main.prevoyancehrm.constants.Role;
+import com.main.prevoyancehrm.dto.RequestDto.AddEmpLeave;
+import com.main.prevoyancehrm.dto.RequestDto.HolidayRequest;
 import com.main.prevoyancehrm.dto.RequestDto.OnboardingRequest;
 import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
+import com.main.prevoyancehrm.entities.BalanceLeaves;
+import com.main.prevoyancehrm.entities.Holidays;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
 import com.main.prevoyancehrm.exceptions.UnauthorizeException;
 import com.main.prevoyancehrm.helper.ExcelFormater;
-import com.main.prevoyancehrm.service.serviceImpl.EmailServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.SalaryServiceImpl;
-import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.*;
 import com.main.prevoyancehrm.service.serviceLogic.EmployeeDefaultAssignElements;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -44,12 +47,16 @@ import jakarta.validation.Valid;
 @CrossOrigin
 public class HrManagerController {
 
+    private final BankDetailServiceImpl bankDetailServiceImpl;
+
     private final UserServiceImpl userServiceImpl;
     private final EmailServiceImpl emailServiceImpl;
     private final SalaryServiceImpl salaryServiceImpl;
     private final ExcelFormater excelFormater;
     private final EmployeeDefaultAssignElements assignElements;
     private final ProfessionalDetailServiceImpl professionalDetailServiceImpl;
+    private final HolidaysServiceImpl holidaysServiceImpl;
+    private final BalanceLeaveServiceImpl balanceLeaveServiceImpl;
 
     public HrManagerController(
             UserServiceImpl userServiceImpl,
@@ -57,14 +64,19 @@ public class HrManagerController {
             SalaryServiceImpl salaryServiceImpl,
             ExcelFormater excelFormater,
             EmployeeDefaultAssignElements assignElements,
-            ProfessionalDetailServiceImpl professionalDetailServiceImpl
-    ) {
+            ProfessionalDetailServiceImpl professionalDetailServiceImpl,
+            HolidaysServiceImpl holidaysServiceImpl,
+            BalanceLeaveServiceImpl balanceLeaveServiceImpl
+    , BankDetailServiceImpl bankDetailServiceImpl) {
         this.userServiceImpl = userServiceImpl;
         this.emailServiceImpl = emailServiceImpl;
         this.salaryServiceImpl = salaryServiceImpl;
         this.excelFormater = excelFormater;
         this.assignElements = assignElements;
         this.professionalDetailServiceImpl = professionalDetailServiceImpl;
+        this.holidaysServiceImpl = holidaysServiceImpl;
+        this.balanceLeaveServiceImpl = balanceLeaveServiceImpl;
+        this.bankDetailServiceImpl = bankDetailServiceImpl;
     }
 
 
@@ -246,4 +258,42 @@ public class HrManagerController {
             throw new Exception();
         }
     }
+
+    @PostMapping("/addHoliday")
+    public ResponseEntity<SuccessResponse> addHoliday(@RequestBody HolidayRequest request)throws Exception{
+        try{
+            Holidays holidays = new Holidays();
+            holidays.setDate(request.getDate());
+            holidays.setName(request.getName());
+            holidays.setDescription(request.getDescription());
+            this.holidaysServiceImpl.addHolidays(holidays);
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK,200,"holiday added successfully !");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }
+        catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
+    @PostMapping("addEmployeeLeave/{employeeId}")
+    public ResponseEntity<SuccessResponse> addEmployeeLeave(@RequestParam("employeeId")String employeeId,@RequestBody AddEmpLeave request) throws Exception{
+        SuccessResponse response = new SuccessResponse();
+        try{
+            BalanceLeaves balanceLeaves = this.balanceLeaveServiceImpl.getBalanceLeaveByIdAndEmpId(request.getLeaveId(), employeeId);
+            if(balanceLeaves==null){
+                throw new EntityNotFoundException("leave not found !");
+            }
+            balanceLeaves.setLeavesTaken(balanceLeaves.getLeavesTaken()+request.getLeavesTaken());
+            balanceLeaves.setBalanceLeaves(balanceLeaves.getBalanceLeaves()-request.getLeavesTaken());
+            this.balanceLeaveServiceImpl.addBalanceLeaves(balanceLeaves);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Leave Added Successfully!");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+        
+
 }

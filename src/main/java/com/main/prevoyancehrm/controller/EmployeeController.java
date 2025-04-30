@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 
 
 @RestController
-@RequestMapping("/hrExecutive")
+@RequestMapping("/employee")
 @CrossOrigin
 public class EmployeeController {
     
