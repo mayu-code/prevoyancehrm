@@ -40,4 +40,14 @@ public interface HolidaysRepo extends JpaRepository<Holidays,Long> {
         WHERE h.id = :holidayId
     """)
     int softDeleteHolidayById(@Param("holidayId") Long holidayId);
+
+    @Modifying
+    @Transactional
+    @Query("""
+        UPDATE Holidays h 
+        SET h.isDelete = true, 
+            h.deleteAt = CURRENT_TIMESTAMP 
+        WHERE h.date = :holidayDate
+    """)
+    int softDeleteHolidayByDate(@Param("holidayDate") LocalDate holidayDate);
 }

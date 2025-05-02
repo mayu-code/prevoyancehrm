@@ -5,14 +5,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
-import javax.xml.crypto.Data;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,7 +47,6 @@ import jakarta.validation.Valid;
 public class HrManagerController {
 
     private final BankDetailServiceImpl bankDetailServiceImpl;
-
     private final UserServiceImpl userServiceImpl;
     private final EmailServiceImpl emailServiceImpl;
     private final SalaryServiceImpl salaryServiceImpl;
@@ -276,6 +273,17 @@ public class HrManagerController {
         }
     }
 
+    @DeleteMapping("/deleteHoliday/{holidayId}")
+    public ResponseEntity<SuccessResponse> deleteHoliday(@PathVariable("holidayId")long holidayId)throws Exception{
+        try{
+            this.holidaysServiceImpl.deleteHolidayById(holidayId);
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK,200,"holiday deleted successfully !");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
     @PostMapping("addEmployeeLeave/{employeeId}")
     public ResponseEntity<SuccessResponse> addEmployeeLeave(@PathVariable("employeeId")String employeeId,@RequestBody AddEmpLeave request) throws Exception{
         SuccessResponse response = new SuccessResponse();
@@ -298,7 +306,5 @@ public class HrManagerController {
             e.printStackTrace();
             throw new Exception(e.getMessage());
         }
-    }
-        
-
+    }     
 }

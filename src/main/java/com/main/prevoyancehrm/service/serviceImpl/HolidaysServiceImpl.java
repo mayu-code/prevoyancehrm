@@ -25,5 +25,10 @@ public class HolidaysServiceImpl implements HolidaysService{
     public List<Holidays> getAllHolidays() {
         return this.holidaysRepo.findUpcomingHolidays(LocalDate.now());
     }
+
+    @Override
+    public void deleteHolidayById(long id) {
+        this.holidaysRepo.softDeleteHolidayById(id);
+    }
     
 }

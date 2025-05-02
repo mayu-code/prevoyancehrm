@@ -28,12 +28,12 @@ public class LeaveTaken {
     private LocalDate fromDate;
     private LocalDate toDate;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "balanceLeaves_id")
     @JsonIgnore
     private BalanceLeaves balanceLeaves;
-    
 
+    
     private boolean isDelete=false;
     private boolean isActive=false;
 
