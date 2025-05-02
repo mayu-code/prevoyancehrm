@@ -20,4 +20,6 @@ public interface LeaveTypeRepo extends JpaRepository<LeaveType,Long>{
     @Transactional
     @Query("UPDATE LeaveType l SET l.isDelete = true, l.deleteAt = CURRENT_TIMESTAMP WHERE l.id = :id")
     int softDeleteById(@Param("id") Long id);
+
+    List<LeaveType> findDestincTypesByIsDeleteFalse();
 }

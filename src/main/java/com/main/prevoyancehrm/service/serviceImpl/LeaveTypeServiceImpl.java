@@ -63,5 +63,11 @@ public class LeaveTypeServiceImpl implements LeavetypeService {
         this.leaveTypeRepo.softDeleteById(id);
         return;
     }
+
+
+    @Override
+    public List<LeaveType> getDistinLeaveTypes() {
+        return this.leaveTypeRepo.findDestincTypesByIsDeleteFalse();
+    }
     
 }

@@ -1,6 +1,7 @@
 package com.main.prevoyancehrm.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -40,14 +41,13 @@ public interface BalanceLeaveRepo extends JpaRepository<BalanceLeaves,Long>{
             FROM BalanceLeaves b
             JOIN b.user u
             JOIN b.leaveType l
-            WHERE b.id = :balanceLeaveId
+            WHERE l.id = :balanceLeaveId
             AND u.id = :userId
             AND b.isDelete = false
         """)
-        BalanceLeaves findByBalanceLeaveIdAndEmpId(
+        Optional<BalanceLeaves> findByBalanceLeaveIdAndEmpId(
             @Param("balanceLeaveId") Long balanceLeaveId,
-            @Param("userId") String userId
-                                            );
+            @Param("userId") String userId);
 
 
     @Modifying

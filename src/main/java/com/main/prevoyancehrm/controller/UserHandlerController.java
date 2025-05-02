@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ import com.main.prevoyancehrm.service.serviceImpl.BalanceLeaveServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.BankDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.EducationDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ExperienceDetailsServiceImpl;
+import com.main.prevoyancehrm.service.serviceImpl.LeaveTypeServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.ProfessionalDetailServiceImpl;
 import com.main.prevoyancehrm.service.serviceImpl.UserServiceImpl;
 
@@ -34,6 +36,7 @@ public class UserHandlerController {
     private final EducationDetailServiceImpl educationDetailServiceImpl;
     private final ExperienceDetailsServiceImpl experienceDetailsServiceImpl;
     private final BankDetailServiceImpl bankDetailServiceImpl;
+    private final LeaveTypeServiceImpl leaveTypeServiceImpl;
 
     @Autowired
     public UserHandlerController(
@@ -42,7 +45,8 @@ public class UserHandlerController {
         ProfessionalDetailServiceImpl professionalDetailServiceImpl,
         EducationDetailServiceImpl educationDetailServiceImpl,
         ExperienceDetailsServiceImpl experienceDetailsServiceImpl,
-        BankDetailServiceImpl bankDetailServiceImpl
+        BankDetailServiceImpl bankDetailServiceImpl,
+        LeaveTypeServiceImpl leaveTypeServiceImpl
     ) {
         this.userServiceImpl = userServiceImpl;
         this.balanceLeaveServiceImpl = balanceLeaveServiceImpl;
@@ -50,6 +54,7 @@ public class UserHandlerController {
         this.educationDetailServiceImpl = educationDetailServiceImpl;
         this.experienceDetailsServiceImpl = experienceDetailsServiceImpl;
         this.bankDetailServiceImpl = bankDetailServiceImpl;
+        this.leaveTypeServiceImpl = leaveTypeServiceImpl;
     }
 
     @GetMapping("/getProfile")
@@ -167,4 +172,32 @@ public class UserHandlerController {
             throw new Exception();
         }
     }
+    @GetMapping("/getEmpBalanceLeaves/{userId}")
+    public ResponseEntity<?>getBalanceLeavesEmpId(@PathVariable("userId") String userId)throws Exception{
+        try{
+            DataResponse response = new DataResponse();
+            response.setData(this.balanceLeaveServiceImpl.getAllBalanceLeaves(userId));
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Balance leaves Get successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            throw new Exception();
+        }
+    }
+
+    @GetMapping("/getDistinctLeaveTypes")
+    public ResponseEntity<?>getDistinctLeaveTypes()throws Exception{
+        try{
+            DataResponse response = new DataResponse();
+            response.setData(this.leaveTypeServiceImpl.getDistinLeaveTypes());
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("Balance leaves Get successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
 }

@@ -8,5 +8,5 @@ import com.main.prevoyancehrm.entities.BalanceLeaves;
 public interface BalanceLeavesService {
     BalanceLeaves addBalanceLeaves(BalanceLeaves balanceLeaves);
     List<BalaceLeavesResponse> getAllBalanceLeaves(String id);
-    BalanceLeaves getBalanceLeaveByIdAndEmpId(Long balanceLeaveId, String userId);
+    BalanceLeaves getBalanceLeaveByIdAndEmpId(long balanceLeaveId, String userId);
 }

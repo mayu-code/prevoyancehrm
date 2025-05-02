@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -276,10 +277,13 @@ public class HrManagerController {
     }
 
     @PostMapping("addEmployeeLeave/{employeeId}")
-    public ResponseEntity<SuccessResponse> addEmployeeLeave(@RequestParam("employeeId")String employeeId,@RequestBody AddEmpLeave request) throws Exception{
+    public ResponseEntity<SuccessResponse> addEmployeeLeave(@PathVariable("employeeId")String employeeId,@RequestBody AddEmpLeave request) throws Exception{
         SuccessResponse response = new SuccessResponse();
         try{
+            System.out.println("ok");
+            System.out.println(employeeId + " "+request.getLeaveId()+" "+request.getLeavesTaken());
             BalanceLeaves balanceLeaves = this.balanceLeaveServiceImpl.getBalanceLeaveByIdAndEmpId(request.getLeaveId(), employeeId);
+        
             if(balanceLeaves==null){
                 throw new EntityNotFoundException("leave not found !");
             }
@@ -291,6 +295,7 @@ public class HrManagerController {
             response.setHttpStatusCode(200);
             return ResponseEntity.of(Optional.of(response));
         }catch(Exception e){
+            e.printStackTrace();
             throw new Exception(e.getMessage());
         }
     }

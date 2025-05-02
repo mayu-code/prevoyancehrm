@@ -9,4 +9,5 @@ public interface LeavetypeService {
     void assignLeaveTypesToEmployee(LeaveType leaveType);
     List<LeaveType> getAllLeaveTypes();
     void deleteLeaveType(long id);
+    List<LeaveType> getDistinLeaveTypes();
 }

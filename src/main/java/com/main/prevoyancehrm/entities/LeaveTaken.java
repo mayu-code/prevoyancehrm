@@ -1,7 +1,7 @@
 package com.main.prevoyancehrm.entities;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -12,30 +12,26 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Entity
 @Data
-public class BalanceLeaves {
-
+@Entity
+@AllArgsConstructor
+@NoArgsConstructor
+public class LeaveTaken {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private float balanceLeaves;
     private float leavesTaken;
-
-    @ManyToOne
-    @JoinColumn(name = "leave_type_id")
-    private LeaveType leaveType;
+    private LocalDate fromDate;
+    private LocalDate toDate;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "balanceLeaves_id")
     @JsonIgnore
-    private User user;
-
-    @OneToMany(mappedBy = "balanceLeaves", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LeaveTaken> leaveTakens;
+    private BalanceLeaves balanceLeaves;
     
 
     private boolean isDelete=false;
@@ -44,5 +40,4 @@ public class BalanceLeaves {
     private LocalDateTime createAt=LocalDateTime.now();
     private LocalDateTime modifyAt=LocalDateTime.now();
     private LocalDateTime deleteAt;
-
 }
