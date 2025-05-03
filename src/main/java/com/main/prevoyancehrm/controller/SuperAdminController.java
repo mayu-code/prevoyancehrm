@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,6 +82,25 @@ public class SuperAdminController {
 
         }catch(Exception e){
             throw new Exception(e.getMessage());
+        }
+    }
+
+    @PutMapping("/updateLeaveType/{id}")
+    public ResponseEntity<SuccessResponse> updateLeaveType(@PathVariable("id")long id, @RequestBody LeaveTypeRequest request) throws Exception{
+        SuccessResponse response = new SuccessResponse();
+        LeaveType leaveType = this.leaveTypeServiceImpl.getLeaveTypeById(id);
+        try{
+            leaveType.setMaxAllowed(request.getTotalLeaves());
+            leaveType.setName(request.getLeaveType());
+            leaveType.setDetail(request.getDetail());
+            this.leaveTypeServiceImpl.addLeaveTypes(leaveType);
+            response.setHttpStatus(HttpStatus.OK);
+            response.setMessage("New Leave Type Added Successfully successfully !");
+            response.setHttpStatusCode(200);
+            return ResponseEntity.of(Optional.of(response));
+
+        }catch(Exception e){
+           throw new Exception(e.getMessage());
         }
     }
 }

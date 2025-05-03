@@ -69,5 +69,11 @@ public class LeaveTypeServiceImpl implements LeavetypeService {
     public List<LeaveType> getDistinLeaveTypes() {
         return this.leaveTypeRepo.findDestincTypesByIsDeleteFalse();
     }
+
+
+    @Override
+    public LeaveType getLeaveTypeById(long id) {
+        return this.leaveTypeRepo.findById(id).orElse(null);
+    }
     
 }

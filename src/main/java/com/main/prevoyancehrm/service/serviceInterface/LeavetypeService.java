@@ -6,6 +6,7 @@ import com.main.prevoyancehrm.entities.LeaveType;
 
 public interface LeavetypeService {
     LeaveType addLeaveTypes(LeaveType leaveType);
+    LeaveType getLeaveTypeById(long id);
     void assignLeaveTypesToEmployee(LeaveType leaveType);
     List<LeaveType> getAllLeaveTypes();
     void deleteLeaveType(long id);

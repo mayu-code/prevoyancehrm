@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,6 +31,7 @@ import com.main.prevoyancehrm.dto.responseObjects.DataResponse;
 import com.main.prevoyancehrm.dto.responseObjects.SuccessResponse;
 import com.main.prevoyancehrm.entities.BalanceLeaves;
 import com.main.prevoyancehrm.entities.Holidays;
+import com.main.prevoyancehrm.entities.LeaveTaken;
 import com.main.prevoyancehrm.entities.ProfessionalDetail;
 import com.main.prevoyancehrm.entities.Salary;
 import com.main.prevoyancehrm.entities.User;
@@ -273,6 +275,24 @@ public class HrManagerController {
         }
     }
 
+    @PutMapping("/updateHoliday/{holidayId}")
+    public ResponseEntity<SuccessResponse> updateHoliday(@PathVariable("holidayId")long holidayId,@RequestBody HolidayRequest request)throws Exception{
+        try{
+            Holidays holidays = this.holidaysServiceImpl.getHolidaysById(holidayId);
+            if(holidays==null){
+                throw new EntityNotFoundException("holiday not found !");
+            }
+            holidays.setDate(request.getDate());
+            holidays.setName(request.getName());
+            holidays.setDescription(request.getDescription());
+            this.holidaysServiceImpl.addHolidays(holidays);
+            SuccessResponse response = new SuccessResponse(HttpStatus.OK,200,"holiday updated successfully !");
+            return ResponseEntity.status(HttpStatus.OK).body(response);
+        }catch(Exception e){
+            throw new Exception(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/deleteHoliday/{holidayId}")
     public ResponseEntity<SuccessResponse> deleteHoliday(@PathVariable("holidayId")long holidayId)throws Exception{
         try{
@@ -291,10 +311,11 @@ public class HrManagerController {
             System.out.println("ok");
             System.out.println(employeeId + " "+request.getLeaveId()+" "+request.getLeavesTaken());
             BalanceLeaves balanceLeaves = this.balanceLeaveServiceImpl.getBalanceLeaveByIdAndEmpId(request.getLeaveId(), employeeId);
-        
             if(balanceLeaves==null){
                 throw new EntityNotFoundException("leave not found !");
             }
+            LeaveTaken leaveTaken = new LeaveTaken();
+            // leaveTaken.setFromDate();
             balanceLeaves.setLeavesTaken(balanceLeaves.getLeavesTaken()+request.getLeavesTaken());
             balanceLeaves.setBalanceLeaves(balanceLeaves.getBalanceLeaves()-request.getLeavesTaken());
             this.balanceLeaveServiceImpl.addBalanceLeaves(balanceLeaves);

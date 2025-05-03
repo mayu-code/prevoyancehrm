@@ -30,5 +30,10 @@ public class HolidaysServiceImpl implements HolidaysService{
     public void deleteHolidayById(long id) {
         this.holidaysRepo.softDeleteHolidayById(id);
     }
+
+    @Override
+    public Holidays getHolidaysById(long id) {
+        return this.holidaysRepo.findById(id).orElse(null);
+    }
     
 }

@@ -2,6 +2,7 @@ package com.main.prevoyancehrm.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -30,6 +31,13 @@ public interface HolidaysRepo extends JpaRepository<Holidays,Long> {
         AND h.isDelete = false
     """)
     Holidays findByHolidayId(@Param("holidayId") Long holidayId);
+
+    @Query("""
+        SELECT h FROM Holidays h 
+        WHERE h.id =:id
+        AND h.isDelete = false
+    """)
+    Optional<Holidays> findById(@Param("id") long id);
 
     @Modifying
     @Transactional

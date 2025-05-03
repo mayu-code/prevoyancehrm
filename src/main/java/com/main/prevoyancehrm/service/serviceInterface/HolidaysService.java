@@ -8,4 +8,5 @@ public interface HolidaysService {
     Holidays addHolidays(Holidays holidays);
     List<Holidays> getAllHolidays();
     void deleteHolidayById(long id);
+    Holidays getHolidaysById(long id);
 }
